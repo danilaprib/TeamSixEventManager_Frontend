@@ -1,0 +1,140 @@
+<div class="container mt-5">
+  <div class="d-flex gap-2 align-items-center justify-content-start mb-3">
+    <a class="link link-secondary text-lg text-decoration-none" routerLink="">
+      <span><i class="bi bi-arrow-left text-secondary"></i></span>
+      Back to Events
+    </a>
+  </div>
+
+  <div class="row gap-4">
+    <div class="col-lg d-flex flex-column gap-4">
+      <div class="rounded-3 shadow-sm border p-3 bg-white">
+        <img
+          src="./assets/images/football.jpg"
+          class="rounded-2 w-100 object-fit-cover mb-3"
+          style="height: 300px"
+        />
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex gap-2 align-items-center">
+            <h2 class="h4 mb-0">Tech Conference</h2>
+            <button class="btn btn-light btn-sm border rounded-circle">
+              <i class="bi bi-copy"></i>
+            </button>
+          </div>
+          <div class="d-flex gap-2 align-items-center">
+            <button class="btn btn-outline-success btn-sm"><i class="bi bi-bookmark"></i></button>
+            <span>89 Likes</span>
+            <button class="btn btn-outline-danger btn-sm"><i class="bi bi-heart"></i></button>
+            <button class="btn btn-outline-info btn-sm"><i class="bi bi-share"></i></button>
+          </div>
+        </div>
+
+        <div class="d-flex gap-4 mb-3 text-secondary">
+          <span><i class="bi bi-calendar me-1"></i> 28 April, 2026</span>
+          <span><i class="bi bi-clock me-1"></i> 10:00</span>
+        </div>
+
+        <div class="mb-4">
+          <i class="bi bi-geo-alt-fill text-danger"></i> <strong>Sydney</strong>
+          <a class="ms-2 link-success text-decoration-none" href="#">Open in Google Maps</a>
+        </div>
+
+        <h5>Description</h5>
+        <p class="text-muted">The premier technology conference bringing together innovators...</p>
+      </div>
+
+      <div class="rounded-3 shadow-sm border p-3 bg-white">
+        <h5>Event Insights</h5>
+        <p class="text-muted">View detailed analytics and performance metrics for this event.</p>
+        <a class="link p-2 fs-4 outline-success text-decoration-none hover-analytics rounded-2" style="color: white" routerLink="/analytics/1">
+          <span>
+            <i class="bi bi-bar-chart"></i>
+          </span>
+          Go to Analytics
+        </a>
+      </div>
+
+      <div class="rounded-3 shadow-sm border p-4 bg-white mt-2">
+        <div class="d-flex align-items-center gap-2 mb-4">
+          <i class="bi bi-chat-left-text fs-4"></i>
+          <h5 class="mb-0">Comments (5)</h5>
+        </div>
+
+        <div class="d-flex gap-3 mb-4">
+          <div
+            class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+            style="width: 45px; height: 45px"
+          >
+            <span class="text-success fw-bold">YO</span>
+          </div>
+          <div class="flex-grow-1">
+            <textarea
+              class="form-control mb-2"
+              rows="2"
+              placeholder="Write a comment..."
+            ></textarea>
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-success btn-sm px-4 rounded-2">
+                <i class="bi bi-send me-2"></i>Comment
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column gap-4">
+          <div class="d-flex gap-3">
+            <div
+              class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+              style="width: 40px; height: 40px"
+            >
+              <span class="small">SJ</span>
+            </div>
+            <div class="flex-grow-1 pb-3">
+              <div class="d-flex justify-content-start gap-2 align-items-center">
+                <strong>Sarah Johnson</strong>
+                <small class="text-muted">2 days ago</small>
+              </div>
+              <p class="mb-2 text-muted">
+                The organization was top-notch and the atmosphere was incredible!
+              </p>
+              <div class="d-flex align-items-center gap-2 text-danger small">
+                <i class="bi bi-hand-thumbs-up"></i> <span>24</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 rounded-3 shadow-sm border p-4 bg-white align-self-start">
+      <h6 class="text-muted text-uppercase small">Pricing</h6>
+      <h2 class="display-6 fw-bold mb-4">FREE</h2>
+
+      <div class="d-flex flex-column gap-3 mb-4">
+        <div class="d-flex justify-content-between align-items-center p-3 border rounded-2">
+          <div>
+            <div class="fw-bold">Early Bird</div>
+            <small class="text-success">20% off</small>
+          </div>
+          <span class="badge bg-light text-dark border">Available</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center p-3 border rounded-2">
+          <div class="fw-bold">Standard</div>
+          <span class="badge bg-light text-dark border">Available</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center p-3 border rounded-2">
+          <div>
+            <div class="fw-bold">VIP</div>
+            <small class="text-muted">Premium Sitting</small>
+          </div>
+          <span class="badge bg-danger">Unavailable</span>
+        </div>
+      </div>
+
+      <button class="btn btn-success w-100 py-2 fw-bold rounded-2">Book Now</button>
+    </div>
+  </div>
+</div>

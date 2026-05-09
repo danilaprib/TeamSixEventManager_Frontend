@@ -1,0 +1,61 @@
+<div
+  class="container-fluid align-items-center sticky-top justify-content-between d-flex align-items-center border border-bottom-5 p-5 bg-white text-white"
+  style="height: 80px"
+>
+  <a routerLink="">
+    <img
+      type="image\svg"
+      class="logo"
+      src="./assets/icons/logo.svg"
+      alt="EVENTS_MANAGER"
+      style="width: 70px; height: 70px"
+    />
+  </a>
+
+  <nav class="navbar navbar-expand align-items-center justify-content-center">
+    <ul class="navbar-nav">
+      <li class="nav-item-xxl">
+        <a class="nav-link fs-3" routerLink="">EVENTS</a>
+      </li>
+      <li class="nav-item-xxl">
+        <a class="nav-link fs-3" routerLink="">CATEGORIES</a>
+      </li>
+      <li class="nav-item-xxl">
+        <a class="nav-link fs-3" routerLink="/about">ABOUT</a>
+      </li>
+      <li class="nav-item-xxl">
+        <a class="nav-link fs-3" routerLink="">CONTACT</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="d-flex gap-4 align-items-center">
+    <a routerLink="user/1" class="rounded-circle bg-light p-2 hover-green">
+      <!-- <i class="bi bi-person"></i> -->
+      <img
+        type="image\svg"
+        src="./assets/icons/user.svg"
+        style="width: 25px; height: 25px"
+        alt="User Profile"
+      />
+    </a>
+    @if (!isLoggedIn) {
+      <a
+        class="link text-dark hover-green p-2 rounded-3 text-decoration-none fs-4"
+        routerLink="/login"
+      >
+        LOGIN
+      </a>
+      <a
+        class="link text-dark hover-green p-2 rounded-3 text-decoration-none fs-4"
+        routerLink="/signup"
+      >
+        SIGN UP
+      </a>
+    } @else {
+      <a class="link text-dark hover-green p-2 rounded-3 text-decoration-none fs-4" routerLink="">
+        LOGOUT
+      </a>
+    }
+  </div>
+</div>

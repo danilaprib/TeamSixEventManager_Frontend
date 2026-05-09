@@ -1,0 +1,39 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+
+
+:root{
+  --main-color: rgb(57, 196, 45);
+  --main-color-dark: rgb(43, 152, 34); /* For hovers */
+}
+
+
+.btn-custom {
+  background-color: var(--main-color);
+  color: white;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.btn-custom:hover {
+  background-color: var(--main-color-dark);
+  color: white;
+}
+
+/* styles.css */
+.hover-green {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: 1px solid transparent; /* Prevents layout shift */
+}
+
+.hover-green:hover {
+    background-color: var(--main-color) !important;
+    color: white !important;
+    cursor: pointer;
+}
+
+/* Optional: If you want the icon to turn white or change slightly on hover */
+.hover-green:hover img {
+    filter: brightness(0) invert(1); /* Turns a black/dark SVG white */
+}

@@ -1,0 +1,10 @@
+name: Outer Workflows
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  restrict-merges:
+    uses: SDC-Team-Projects/TeamSixEventManager.Workflows/.github/workflows/restrict-main-merges.yml@main

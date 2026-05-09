@@ -1,0 +1,68 @@
+<div class="container mt-5">
+  <div class="d-flex gap-2 align-items-center justify-content-start mb-3">
+    <a class="link link-secondary text-lg text-decoration-none" routerLink="/event-page/1">
+      <span><i class="bi bi-arrow-left text-secondary"></i></span>
+      Back to Event Page
+    </a>
+  </div>
+  <h1>Analytics</h1>
+
+  <span class="text-secondary text-md">Tech Conference</span>
+
+  <div class="container mt-4">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="card shadow-sm border p-3 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Total Views</p>
+              <h3 class="fw-bold mb-0">4,500</h3>
+              <p class="text-muted x-small mb-0">3,800 unique visitors</p>
+            </div>
+            <i class="bi bi-eye text-muted"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card shadow-sm border p-3 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Registrations</p>
+              <h3 class="fw-bold mb-0">89</h3>
+              <p class="text-muted x-small mb-0">412 bookmarks</p>
+            </div>
+            <i class="bi bi-people text-muted"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card shadow-sm border p-3 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted small mb-1">Revenue</p>
+              <h3 class="fw-bold mb-0">$0</h3>
+              <p class="text-muted x-small mb-0">Free event</p>
+            </div>
+            <i class="bi bi-currency-dollar text-muted"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mt-4">
+    <div class="card shadow-sm border-0 p-4">
+      <h6 class="fw-bold mb-4"><i class="bi bi-graph-up me-2"></i>Views This Week</h6>
+      <apx-chart
+        [series]="viewsChartOptions.series"
+        [chart]="viewsChartOptions.chart"
+        [xaxis]="viewsChartOptions.xaxis"
+        [colors]="viewsChartOptions.colors"
+        [plotOptions]="viewsChartOptions.plotOptions"
+      >
+      </apx-chart>
+    </div>
+  </div>
+</div>
