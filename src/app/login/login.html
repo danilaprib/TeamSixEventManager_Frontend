@@ -4,28 +4,36 @@
       <div class="card shadow border-0 p-4 rounded-3">
         <h1 class="text-center mb-4">Login</h1>
 
-        <form>
+        @if (errorMessage) {
+          <div class="alert alert-danger py-2 small" role="alert">
+            {{ errorMessage }}
+          </div>
+        }
+
+        <form (ngSubmit)="onLogin()">
           <div class="mb-3">
             <label class="form-label fw-bold">Email</label>
-            <input type="email" class="form-control" placeholder="Enter your email" />
+            <input type="email" name="email" class="form-control" placeholder="Enter your email" [(ngModel)]="loginData.email" required />
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-bold">Password</label>
             <div class="input-group">
-              <input type="password" class="form-control" placeholder="Enter your password" />
-              <button class="btn btn-outline-secondary"><i class="bi bi-eye"></i></button>
+              <input [type]="showPassword ? 'text' : 'password'" name="password" class="form-control" placeholder="Enter your password" [(ngModel)]="loginData.password" required />
+              <button class="btn btn-outline-secondary" type="button" (click)="showPassword = !showPassword">
+                <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+              </button>
             </div>
           </div>
 
-          <button class="btn btn-success w-100 py-2 mb-3">Login</button>
+          <button type="submit" class="btn btn-success w-100 py-2 mb-3">Login</button>
 
-          <div class="text-center small ">
+          <div class="text-center small">
             <p class="mb-1">
               Forgot password? <a href="#" class="text-decoration-none">Reset password</a>
             </p>
             <p>
-              Don't have an account? <a href="#" class="text-decoration-none fw-bold">Sign Up</a>
+              Don't have an account? <a routerLink="/signup" class="text-decoration-none fw-bold">Sign Up</a>
             </p>
           </div>
         </form>

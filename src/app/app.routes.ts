@@ -6,6 +6,7 @@ import { LoginComponent } from './login/login';
 import { SignupComponent } from './signup/signup';
 import { EventPageComponent } from './event-page/event-page';
 import { Analytics } from './analytics/analytics';
+import { CreateEventComponent } from './create-event/create-event';
 
 export const routes: Routes =
     [
@@ -18,8 +19,16 @@ export const routes: Routes =
             component: UserPage
         },
         {
+            path: 'user-page',
+            component: UserPage
+        },
+        {
             path: 'event-page/:eventId',
             component: EventPageComponent
+        },
+        {
+            path: 'create-event',
+            component: CreateEventComponent
         },
         {
             path: 'analytics/:eventId',

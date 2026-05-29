@@ -10,8 +10,8 @@
         <i class="bi bi-person fs-1"></i>
       </div>
 
-      <h4 class="w-100 text-center">john_doe</h4>
-      <span class="badge bg-light text-dark align-self-center mb-3">Role: user</span>
+      <h4 class="w-100 text-center">{{ authService.currentUsername() }}</h4>
+      <span class="badge bg-success text-white align-self-center mb-3">Role: {{ authService.currentUserRole() }}</span>
 
       <a
         class="cursor-pointer align-items-center justify-content-start w-100 gap-2 p-2 text-decoration-none text-dark rounded hover-gray"
@@ -35,16 +35,20 @@
         Events Calendar
       </a>
 
-      <div class="mt-2 small text-muted">Member since: January 15, 2024</div>
+      <div class="mt-2 small text-muted">Member Profile Verified</div>
 
       <button
-        class="btn btn-danger w-100 mt-3 d-flex align-items-center justify-content-center gap-2 w-100"
+        class="btn btn-danger w-100 mt-3 d-flex align-items-center justify-content-center gap-2"
+        type="button"
+        (click)="deleteAccount()"
       >
         <i class="bi bi-trash"></i>
         Delete account
       </button>
-            <button
-        class="btn btn-secondary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 w-100"
+      <button
+        class="btn btn-secondary w-100 mt-2 d-flex align-items-center justify-content-center gap-2"
+        type="button"
+        (click)="logout()"
       >
         Sign Out
       </button>
@@ -68,13 +72,6 @@
         </button>
         <button
           class="nav-link text-dark"
-          [class.active]="activeTab === 'wishlist'"
-          (click)="setActiveTab('wishlist')"
-        >
-          Wishlist
-        </button>
-        <button
-          class="nav-link text-dark"
           [class.active]="activeTab === 'interests'"
           (click)="setActiveTab('interests')"
         >
@@ -82,17 +79,17 @@
         </button>
       </div>
 
-      <div class="p-4 rounded-3 shadow border">
+      <div class="p-4 rounded-3 shadow border bg-white">
         @if (activeTab === 'profile') {
           <h5>Account Settings</h5>
           <div class="mb-3">
             <label class="form-label">Username</label>
-            <input class="form-control" value="john_doe" />
+            <input class="form-control" name="profileUsername" [(ngModel)]="profileData.username" />
           </div>
 
           <div class="mb-3">
             <label class="form-label">Email</label>
-            <input class="form-control" value="john.doe@example.com" />
+            <input class="form-control" name="profileEmail" [(ngModel)]="profileData.email" />
           </div>
 
           <button class="btn btn-success px-4 mb-4">Save Changes</button>
@@ -159,101 +156,59 @@
         }
 
         @if (activeTab === 'liked') {
-          <div class="d-flex justify-items-start align-items-center gap-2">
+          <div class="d-flex justify-items-start align-items-center gap-2 mb-3">
             <i class="bi bi-heart text-danger"></i>
             <strong>Liked Events</strong>
-            <span>2</span>
+            <span>{{ likedEvents.length }}</span>
           </div>
 
-          <a routerLink="/event-page/1" class="text-decoration-none text-dark ">
-            <div class="container d-flex flex-column gap-2 align-items-center mt-2 hover-gray">
-              <div
-                class="container d-flex gap-2 justify-content-start align-items-center border-1 rounded-3 shadow-sm gap-2"
-              >
-                <img
-                  src="./assets/images/football.jpg"
-                  style="height: 80px; width: 128px"
-                  class="rounded-3 over object-fit-cover"
-                />
+          @if (likedEventsError) {
+            <div class="alert alert-danger">{{ likedEventsError }}</div>
+          }
 
-                <span
-                  class="badge position-absolute top-0 start-0 m-3 bg-success rounded-pill px-3"
+          @if (likedEvents.length === 0 && !likedEventsError) {
+            <p class="text-muted mb-0">You have not liked any events yet.</p>
+          }
+
+          @for (event of likedEvents; track event.id) {
+            <a [routerLink]="['/event-page', event.id]" class="text-decoration-none text-dark">
+              <div class="container d-flex flex-column gap-2 align-items-center mt-2 hover-gray">
+                <div
+                  class="container d-flex gap-2 justify-content-start align-items-center border-1 rounded-3 shadow-sm gap-2 p-2"
                 >
-                  Sports
-                </span>
+                  <img
+                    [src]="event.imageUrl"
+                    style="height: 80px; width: 128px"
+                    class="rounded-3 over object-fit-cover"
+                    [alt]="event.title"
+                  />
 
-                <div class="container d-flex flex-column align-items-start">
-                  <h4 class="fw-bold">Marathon 2026</h4>
-                  <div class="d-flex gap-2">
-                    <div class="d-flex align-items-center justify-content-start gap-2">
-                      <i class="bi bi-calendar text-secondary"></i>
-                      Sep 15, 2026
+                  <div class="container d-flex flex-column align-items-start">
+                    <h4 class="fw-bold">{{ event.title }}</h4>
+                    <div class="d-flex flex-wrap gap-2">
+                      <div class="d-flex align-items-center justify-content-start gap-2">
+                        <i class="bi bi-calendar text-secondary"></i>
+                        {{ event.date }}
+                      </div>
+                      <div class="d-flex align-items-center justify-content-start gap-2">
+                        <i class="bi bi-clock text-secondary"></i>
+                        {{ event.time }}
+                      </div>
+                      <div class="d-flex align-items-center justify-content-start gap-2">
+                        <i class="bi bi-geo-alt-fill text-secondary"></i>
+                        {{ event.location }}
+                      </div>
                     </div>
-                    <div class="d-flex align-items-center justify-content-start gap-2">
-                      <i class="bi bi-clock text-secondary"></i>
-                      Sep 15, 2026
-                    </div>
-                    <div class="d-flex align-items-center justify-content-start gap-2">
-                      <i class="bi bi-geo-alt-fill text-secondary"></i>
-                      Sep 15, 2026
-                    </div>
+                    <span class="fs-3 text-success mt-1">{{ event.price === 0 ? 'FREE' : '?' + event.price }}</span>
                   </div>
-                  <span class="fs-3 text-success mt-1">$50</span>
                 </div>
               </div>
-            </div>
-          </a>
-        }
-
-        @if (activeTab === 'wishlist') {
-          <div class="d-flex justify-items-start align-items-center gap-2">
-            <i class="bi bi-bookmark text-success"></i>
-            <strong>Wishlist</strong>
-            <span>2</span>
-          </div>
-
-          <a routerLink="/event-page/1" class="text-decoration-none text-dark">
-            <div class="container d-flex flex-column gap-2 align-items-center  mt-2">
-              <div
-                class="container d-flex gap-2 justify-content-start align-items-center border-1 rounded-3 shadow-sm gap-2 hover-gray"
-              >
-                <img
-                  src="./assets/images/football.jpg"
-                  style="height: 80px; width: 128px"
-                  class="rounded-3 over object-fit-cover"
-                />
-
-                <span
-                  class="badge position-absolute top-0 start-0 m-3 bg-success rounded-pill px-3"
-                >
-                  Sports
-                </span>
-
-                <div class="container d-flex flex-column align-items-start">
-                  <h4 class="fw-bold">Marathon 2026</h4>
-                  <div class="d-flex gap-2">
-                    <div class="d-flex align-items-center justify-content-start gap-2">
-                      <i class="bi bi-calendar text-secondary"></i>
-                      Sep 15, 2026
-                    </div>
-                    <div class="d-flex align-items-center justify-content-start gap-2">
-                      <i class="bi bi-clock text-secondary"></i>
-                      Sep 15, 2026
-                    </div>
-                    <div class="d-flex align-items-center justify-content-start gap-2">
-                      <i class="bi bi-geo-alt-fill text-secondary"></i>
-                      Sep 15, 2026
-                    </div>
-                  </div>
-                  <span class="fs-3 text-success mt-1">$50</span>
-                </div>
-              </div>
-            </div>
-          </a>
+            </a>
+          }
         }
 
         @if (activeTab === 'interests') {
-          <div class="p-4 rounded-3 shadow border bg-white">
+          <div class="p-4 rounded-3 bg-white">
             <h5>I am interested in:</h5>
             <p class="text-muted small">Select tags to personalize your event recommendations.</p>
 

@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-header',
+  standalone: true,
   imports: [RouterLink],
   templateUrl: './header.html',
   styles: `
@@ -16,10 +18,13 @@ import { RouterLink } from '@angular/router';
 })
 export class HeaderComponent {
 
-  isLoggedIn: Boolean = false
+  public authService = inject(AuthService);
+  private router = inject(Router);
 
+  
   logout(){
-    this.isLoggedIn = false;
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
 }

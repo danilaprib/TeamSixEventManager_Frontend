@@ -51,21 +51,19 @@
         </i>
       </button>
       <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" />
-        <label class="btn btn-outline-success" for="btnradio1">Date Created</label>
+  <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked />
+  <label class="btn btn-outline-success" for="btnradio1" (click)="setSortType('date')">Date Created</label>
 
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" />
-        <label class="btn btn-outline-success" for="btnradio2">Price</label>
+  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" />
+  <label class="btn btn-outline-success" for="btnradio2" (click)="setSortType('price')">Price</label>
 
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" />
-        <label class="btn btn-outline-success" for="btnradio3">Price</label>
-
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio4" autocomplete="off" />
-        <label class="btn btn-outline-success" for="btnradio4">Likes</label>
-      </div>
+  <input type="radio" class="btn-check" name="btnradio" id="btnradio4" autocomplete="off" />
+  <label class="btn btn-outline-success" for="btnradio4" (click)="setSortType('likes')">Likes</label>
+</div>
     </div>
   </div>
 
+ <div class="container mt-5">
   <div class="container mt-4">
     <div class="row g-4">
       @for (event of events; track event.id) {
@@ -85,19 +83,6 @@
                 {{ event.category }}
               </span>
 
-              <button
-                class="btn btn-light btn-sm position-absolute top-0 end-0 m-3 rounded-circle shadow-sm"
-                [class.btn-light]="!event.isInWishlist"
-                [class.btn-green]="event.isInWishlist"
-                (click)="toggleWishlist(event)"
-              >
-                <i
-                  class="bi"
-                  [class.bi-bookmark-fill]="event.isInWishlist"
-                  [class.bi-bookmark]="!event.isInWishlist"
-                  [class.text-white]="event.isInWishlist"
-                ></i>
-              </button>
             </div>
 
             <div class="card-body d-flex flex-column">
@@ -114,11 +99,13 @@
                   {{ event.price === 0 ? 'FREE' : '€' + event.price }}
                 </span>
 
-                <div class="d-flex gap-1 align-items-center justify-content-end gap-2">
+                <div class="d-flex align-items-center gap-2">
                   <button
-                    class="btn btn-sm rounded-circle shadow"
-                    (click)="toggleLike(event)"
+                    class="btn btn-sm rounded-circle shadow-sm transition-all"
+                    (click)="toggleLike(event, $event)"
                     [class.btn-danger]="event.isLiked"
+                    [class.btn-outline-danger]="!event.isLiked"
+                    style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; z-index: 10;"
                   >
                     <i
                       class="bi"
@@ -126,13 +113,13 @@
                       [class.bi-heart]="!event.isLiked"
                     ></i>
                   </button>
-                  <span>{{ event.likesCount }}</span>
+                  <span class="fw-semibold small">{{ event.likesCount }}</span>
                 </div>
               </div>
 
               <button
                 class="btn btn-dark px-4 mt-4 rounded-2 shadow-sm"
-                routerLink="event-page/{{ event.id }}"
+                [routerLink]="['/event-page', event.id]"
               >
                 Read More
               </button>
@@ -142,4 +129,5 @@
       }
     </div>
   </div>
+</div>
 </div>
