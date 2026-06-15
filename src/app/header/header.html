@@ -14,7 +14,7 @@
   <nav class="navbar navbar-expand align-items-center justify-content-center">
     <ul class="navbar-nav">
       <li class="nav-item-xxl">
-        <a class="nav-link fs-3 text-dark" routerLink="">EVENTS</a>
+        <a class="nav-link fs-3 text-dark" routerLink="/events">EVENTS</a>
       </li>
       <li class="nav-item-xxl">
         <a class="nav-link fs-3 text-dark" routerLink="/create-event">CREATE</a>
@@ -26,6 +26,11 @@
   </nav>
 
   <div class="d-flex gap-4 align-items-center">
+
+    @if (authService.isLoggedIn()) {
+      <span class="text-dark fw-bold small">{{ authService.currentUsername() }}</span>
+    }
+    
     <a [routerLink]="authService.isLoggedIn() ? '/user-page' : '/login'" class="rounded-circle bg-light p-2 hover-green">
       <img
         src="./assets/icons/user.svg"

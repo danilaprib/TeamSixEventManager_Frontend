@@ -21,10 +21,9 @@
   color: white;
 }
 
-/* styles.css */
 .hover-green {
     transition: background-color 0.3s ease, transform 0.2s ease;
-    border: 1px solid transparent; /* Prevents layout shift */
+    border: 1px solid transparent;
 }
 
 .hover-green:hover {
@@ -33,7 +32,12 @@
     cursor: pointer;
 }
 
-/* Optional: If you want the icon to turn white or change slightly on hover */
 .hover-green:hover img {
-    filter: brightness(0) invert(1); /* Turns a black/dark SVG white */
+    filter: brightness(0) invert(1);
+}
+
+input::-ms-reveal {
+    display: none !important;
+    width: 0;
+    height: 0;
 }

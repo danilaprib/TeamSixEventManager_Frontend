@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { RouterLink, Router, RouteReuseStrategy } from "@angular/router";
+import { RouterLink, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { EventService } from '../services/event.service';
-
-
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-events',
@@ -22,39 +22,76 @@ import { EventService } from '../services/event.service';
       transition: transform 0.3s ease-in-out;
     }
     .event-card-img:hover {
-      transform: scale(1.05); 
+      transform: scale(1.05);
       filter: brightness(105%);
-      z-index: 1; 
+      z-index: 1;
     }
   `,
-
-providers: [
-    {
-      provide: RouteReuseStrategy,
-      useValue: {
-        shouldDetach: () => false,
-        store: () => null,
-        retrieve: () => null,
-        shouldAttach: () => false,
-        shouldReuseRoute: () => false
-      }
-    }
-  ]
 })
 export class Events implements OnInit {
-  private eventService = inject(EventService);
+  public authService = inject(AuthService);
+  public eventService = inject(EventService);
   private router = inject(Router);
 
   isSortingAscending: boolean = false;
   currentSortType: string = 'date';
-  
+
   allEvents: any[] = [];
-  events: any[] = []; 
+  filteredEvents: any[] = [];
+  selectedCities: string[] = [];
+
+  currentPage: number = 1;
+  itemsPerPage: number = 3;
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredEvents.length / this.itemsPerPage);
+  }
+
+  get paginatedEvents(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredEvents.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  get selectedCitiesDisplay(): string {
+    return this.selectedCities.length === 0 ? 'All' : this.selectedCities.join(', ');
+  }
+
+  toggleCitySelection(city: string) {
+    if (this.selectedCities.includes(city)) {
+      this.selectedCities = this.selectedCities.filter(c => c !== city);
+    } else {
+      this.selectedCities = [...this.selectedCities, city];
+    }
+    this.filterAndSortEvents();
+  }
 
   ngOnInit() {
+
+    this.loadEvents();
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        const url = event.urlAfterRedirects;
+        if (url === '/' || url === '/events') {
+          this.loadEvents();
+        }
+      });
+  }
+
+  private loadEvents() {
     this.eventService.getEvents().subscribe({
       next: (backendData: any[]) => {
-        this.events = backendData.map(item => {
+        const currentUserId = this.authService.currentUserId() || localStorage.getItem('userId');
+
+        this.allEvents = backendData.map(item => {
           const tagsArray = item.EventTags || item.eventTags;
           const firstTagEntity = tagsArray && tagsArray[0];
           const tagObj = firstTagEntity ? (firstTagEntity.Tag || firstTagEntity.tag) : null;
@@ -69,6 +106,12 @@ export class Events implements OnInit {
             selectedImage = 'assets/images/outdoors.jpg';
           }
 
+          const likesList: any[] = item.eventLikes || item.EventLikes || [];
+
+          const userHasLiked = currentUserId
+            ? likesList.some(like => (like.UserId || like.user_id || '').toLowerCase() === currentUserId.toLowerCase())
+            : false;
+
           return {
             id: item.Id || item.id,
             title: item.Title || item.title,
@@ -78,14 +121,15 @@ export class Events implements OnInit {
             time: new Date(item.Date || item.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
             location: item.Location || item.location || 'Unknown',
             category: firstTag ? firstTag.toUpperCase() : 'EVENT',
-            price: item.Price !== undefined ? item.Price : (item.price !== undefined ? item.price : 0),
+            price: item.price ?? item.Price ?? 0,
             imageUrl: selectedImage,
-            isLiked: false,
-            likesCount: item.EventLikes ? item.EventLikes.length : (item.eventLikes ? item.eventLikes.length : 0)
+            isLiked: userHasLiked,
+            likesCount: likesList.length
           };
         });
-        
-        this.sortEvents();
+
+        this.filteredEvents = [...this.allEvents];
+        this.filterAndSortEvents();
       },
       error: (err) => {
         console.error(err);
@@ -95,16 +139,30 @@ export class Events implements OnInit {
 
   toggleSortDirection() {
     this.isSortingAscending = !this.isSortingAscending;
-    this.sortEvents();
+    this.filterAndSortEvents();
   }
 
   setSortType(type: string) {
     this.currentSortType = type;
-    this.sortEvents();
+    this.filterAndSortEvents();
   }
 
-  sortEvents() {
-    this.events.sort((a, b) => {
+  filterAndSortEvents() {
+    let result = [...this.allEvents];
+
+    if (this.selectedCities.length > 0) {
+      result = result.filter(e =>
+        this.selectedCities.some(selected =>
+          e.location.toLowerCase() === selected.toLowerCase()
+        )
+      );
+    }
+
+    if (this.currentSortType === 'free') {
+      result = result.filter(e => e.price === 0);
+    }
+
+    result.sort((a, b) => {
       let comparison = 0;
 
       if (this.currentSortType === 'date') {
@@ -113,35 +171,40 @@ export class Events implements OnInit {
         comparison = a.price - b.price;
       } else if (this.currentSortType === 'likes') {
         comparison = a.likesCount - b.likesCount;
+      } else if (this.currentSortType === 'free') {
+        comparison = a.rawDate.getTime() - b.rawDate.getTime();
       }
 
       return this.isSortingAscending ? comparison : -comparison;
     });
+
+    this.filteredEvents = result;
+    this.currentPage = 1;
   }
 
   toggleLike(event: any, mouseEvent: MouseEvent) {
     mouseEvent.stopPropagation();
     mouseEvent.preventDefault();
 
+    const targetId = event.id;
     const wasLiked = event.isLiked;
-    const previousLikesCount = event.likesCount;
 
-    event.isLiked = !wasLiked;
-    event.likesCount = wasLiked
-      ? Math.max(0, event.likesCount - 1)
-      : event.likesCount + 1;
+    const newIsLiked = !wasLiked;
+    const newLikesCount = wasLiked ? Math.max(0, event.likesCount - 1) : event.likesCount + 1;
 
-    this.eventService.likeEvent(event.id).subscribe({
+    this.allEvents = this.allEvents.map(e => e.id === targetId ? { ...e, isLiked: newIsLiked, likesCount: newLikesCount } : e);
+    this.filteredEvents = this.filteredEvents.map(e => e.id === targetId ? { ...e, isLiked: newIsLiked, likesCount: newLikesCount } : e);
+
+    this.eventService.toggleEventLike(targetId, wasLiked).subscribe({
       next: () => {
         if (this.currentSortType === 'likes') {
-          this.sortEvents();
+          this.filterAndSortEvents();
         }
       },
       error: (err) => {
         console.error(err);
-
-        event.isLiked = wasLiked;
-        event.likesCount = previousLikesCount;
+        this.allEvents = this.allEvents.map(e => e.id === targetId ? { ...e, isLiked: wasLiked, likesCount: event.likesCount } : e);
+        this.filterAndSortEvents();
       }
     });
   }

@@ -13,6 +13,10 @@ export const routes: Routes =
         {
             path: '',
             component: Events
+        },        
+        {
+            path: 'events',
+            component: Events
         },
         {
             path: 'user/:userId',

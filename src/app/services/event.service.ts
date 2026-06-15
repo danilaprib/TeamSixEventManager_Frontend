@@ -17,8 +17,17 @@ export class EventService {
     return this.http.post<any>(this.baseUrl, eventData, this.getAuthOptions());
   }
 
-  likeEvent(id: string): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/${id}/like`, {}, this.getAuthOptions());
+  toggleEventLike(id: string, isCurrentlyLiked: boolean): Observable<any> {
+    const likeUrl = `${this.baseUrl}/${id}/like`;
+
+    if (isCurrentlyLiked) {
+      return this.http.delete(likeUrl, this.getAuthOptions());
+    }
+    else {
+      return this.http.post<any>(likeUrl, { isCurrentlyLiked }, this.getAuthOptions());
+    }
+
+    
   }
 
   private getAuthOptions() {
