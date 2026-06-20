@@ -1,273 +1,273 @@
-<div class="container mt-5">
-
-  <div class="row justify-content-center mb-4">
-    <div class="col-md-8">
-      <div class="input-group shadow-sm">
-        <button
-          class="btn btn-white border shadow-none"
-          type="button"
-          id="search-button"
-        >
-          <i class="bi bi-search text-muted"></i>
-        </button>
-
-        <input
-          type="text"
-          class="form-control border-start-0"
-          placeholder="Search events..."
-        />
-      </div>
-    </div>
-  </div>
-
-  <div class="d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center gap-3">
-      <span class="fw-bold small">CITY:</span>
-
-      <div class="dropdown">
-        <button
-          class="btn btn-outline-secondary dropdown-toggle"
-          type="button"
-          data-bs-toggle="dropdown"
-        >
-          {{ selectedCitiesDisplay }}
-        </button>
-        <ul class="dropdown-menu p-2">
-          @for (city of ['Vilnius', 'Kaunas', 'Klaipeda', 'Siauliai',
-          'Panevezys']; track city) {
-          <li>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                [checked]="selectedCities.includes(city)"
-                (change)="toggleCitySelection(city)"
-              />
-              <label class="form-check-label">{{ city }}</label>
-            </div>
-          </li>
-          }
-        </ul>
-      </div>
-
-      <div class="d-flex gap-1">
-        @for (city of selectedCities; track city) {
-        <span class="badge bg-success">
-          {{ city }}
-          <button
-            type="button"
-            class="btn-close btn-close-white ms-1"
-            style="font-size: 0.5rem"
-            (click)="toggleCitySelection(city)"
-          ></button>
-        </span>
-        }
-      </div>
-    </div>
-
-    <div class="d-flex align-items-center gap-2">
-      <span class="fw-bold small">SORT BY:</span>
-
-      <button
-        tooltip
-        class="btn border shadow-sm rounded-3 transition-all"
-        [class.bg-success]="isSortingAscending"
-        [class.text-white]="isSortingAscending"
-        [class.bg-white]="!isSortingAscending"
-        [class.text-dark]="!isSortingAscending"
-        (click)="toggleSortDirection()"
-        style="
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        "
-      >
-        <i
-          class="bi fs-3"
-          [class.bi-sort-alpha-down]="!isSortingAscending"
-          [class.bi-sort-alpha-up-alt]="isSortingAscending"
-        >
-        </i>
-      </button>
-      <div
-        class="btn-group"
-        role="group"
-        aria-label="Basic radio toggle button group"
-      >
-        <input
-          type="radio"
-          class="btn-check"
-          name="btnradio"
-          id="btnradio1"
-          autocomplete="off"
-          checked
-        />
-        <label
-          class="btn btn-outline-success"
-          for="btnradio1"
-          (click)="setSortType('date')"
-          >Date Created</label
-        >
-
-        <input
-          type="radio"
-          class="btn-check"
-          name="btnradio"
-          id="btnradio2"
-          autocomplete="off"
-        />
-        <label
-          class="btn btn-outline-success"
-          for="btnradio2"
-          (click)="setSortType('price')"
-          >Price</label
-        >
-
-        <input
-          type="radio"
-          class="btn-check"
-          name="btnradio"
-          id="btnradio4"
-          autocomplete="off"
-        />
-        <label
-          class="btn btn-outline-success"
-          for="btnradio4"
-          (click)="setSortType('likes')"
-          >Likes</label
-        >
-        <label
-          class="btn btn-outline-success"
-          for="btnradio5"
-          (click)="setSortType('free')"
-          >FREE</label
-        >
-      </div>
-    </div>
-  </div>
-
-
-    <nav class="d-flex justify-content-center mt-4">
-  <ul class="pagination">
-    <li class="page-item" [class.disabled]="currentPage === 1">
-      <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
-    </li>
-    
-    @for (page of [].constructor(totalPages); track $index) {
-      <li class="page-item" [class.active]="currentPage === $index + 1">
-        <button class="page-link" (click)="changePage($index + 1)">{{ $index + 1 }}</button>
-      </li>
-    }
-
-    <li class="page-item" [class.disabled]="currentPage === totalPages">
-      <button class="page-link" (click)="changePage(currentPage + 1)">Next</button>
-    </li>
-  </ul>
-</nav>
-
   <div class="container mt-5">
-    <div class="container mt-4">
-      <div class="row g-4">
-        @for (event of paginatedEvents; track event.id) {
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="card h-100 shadow rounded-2 border-0 overflow-hidden">
-            <div class="position-relative">
-              <a [routerLink]="['/event-page', event.id]">
-                <img
-                  [src]="event.imageUrl"
-                  class="card-img-top object-fit-cover event-card-img"
-                  style="height: 200px"
-                  [alt]="event.title"
+
+    <div class="row justify-content-center mb-4">
+      <div class="col-md-8">
+        <div class="input-group shadow-sm">
+          <button
+            class="btn btn-white border shadow-none"
+            type="button"
+            id="search-button"
+          >
+            <i class="bi bi-search text-muted"></i>
+          </button>
+
+          <input
+            type="text"
+            class="form-control border-start-0"
+            placeholder="Search events..."
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <span class="fw-bold small">CITY:</span>
+
+        <div class="dropdown">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+          >
+            {{ selectedCitiesDisplay }}
+          </button>
+          <ul class="dropdown-menu p-2">
+            @for (city of ['Vilnius', 'Kaunas', 'Klaipeda', 'Siauliai',
+            'Panevezys']; track city) {
+            <li>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [checked]="selectedCities.includes(city)"
+                  (change)="toggleCitySelection(city)"
                 />
-              </a>
-
-              <span
-                class="badge position-absolute top-0 start-0 m-3 bg-success rounded-pill px-3"
-              >
-                {{ event.category }}
-              </span>
-            </div>
-
-            <div class="card-body d-flex flex-column">
-              <h5 class="fw-bold mb-2">{{ event.title }}</h5>
-
-              <div class="d-flex flex-wrap gap-3 small text-muted mb-3">
-                <span
-                  ><i class="bi bi-calendar-event me-1"></i>{{ event.date
-                  }}</span
-                >
-                <span><i class="bi bi-clock me-1"></i>{{ event.time }}</span>
-                <span
-                  ><i class="bi bi-geo-alt me-1"></i>{{ event.location }}</span
-                >
+                <label class="form-check-label">{{ city }}</label>
               </div>
+            </li>
+            }
+          </ul>
+        </div>
 
-              <div
-                class="mt-auto d-flex justify-content-between align-items-center"
-              >
-                <span class="fw-bold fs-5 text-dark">
-                  {{ event.price === 0 ? 'FREE' : '€' + event.price }}
+        <div class="d-flex gap-1">
+          @for (city of selectedCities; track city) {
+          <span class="badge bg-success">
+            {{ city }}
+            <button
+              type="button"
+              class="btn-close btn-close-white ms-1"
+              style="font-size: 0.5rem"
+              (click)="toggleCitySelection(city)"
+            ></button>
+          </span>
+          }
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <span class="fw-bold small">SORT BY:</span>
+
+        <button
+          tooltip
+          class="btn border shadow-sm rounded-3 transition-all"
+          [class.bg-success]="isSortingAscending"
+          [class.text-white]="isSortingAscending"
+          [class.bg-white]="!isSortingAscending"
+          [class.text-dark]="!isSortingAscending"
+          (click)="toggleSortDirection()"
+          style="
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <i
+            class="bi fs-3"
+            [class.bi-sort-alpha-down]="!isSortingAscending"
+            [class.bi-sort-alpha-up-alt]="isSortingAscending"
+          >
+          </i>
+        </button>
+        <div
+          class="btn-group"
+          role="group"
+          aria-label="Basic radio toggle button group"
+        >
+          <input
+            type="radio"
+            class="btn-check"
+            name="btnradio"
+            id="btnradio1"
+            autocomplete="off"
+            checked
+          />
+          <label
+            class="btn btn-outline-success"
+            for="btnradio1"
+            (click)="setSortType('date')"
+            >Date Created</label
+          >
+
+          <input
+            type="radio"
+            class="btn-check"
+            name="btnradio"
+            id="btnradio2"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-success"
+            for="btnradio2"
+            (click)="setSortType('price')"
+            >Price</label
+          >
+
+          <input
+            type="radio"
+            class="btn-check"
+            name="btnradio"
+            id="btnradio4"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-success"
+            for="btnradio4"
+            (click)="setSortType('likes')"
+            >Likes</label
+          >
+          <label
+            class="btn btn-outline-success"
+            for="btnradio5"
+            (click)="setSortType('free')"
+            >FREE</label
+          >
+        </div>
+      </div>
+    </div>
+
+
+      <nav class="d-flex justify-content-center mt-4">
+    <ul class="pagination">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
+      </li>
+      
+      @for (page of [].constructor(totalPages); track $index) {
+        <li class="page-item" [class.active]="currentPage === $index + 1">
+          <button class="page-link" (click)="changePage($index + 1)">{{ $index + 1 }}</button>
+        </li>
+      }
+
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="changePage(currentPage + 1)">Next</button>
+      </li>
+    </ul>
+  </nav>
+
+    <div class="container mt-5">
+      <div class="container mt-4">
+        <div class="row g-4">
+          @for (event of paginatedEvents; track event.id) {
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 shadow rounded-2 border-0 overflow-hidden">
+              <div class="position-relative">
+                <a [routerLink]="['/event-page', event.id]">
+                  <img
+                    [src]="event.imageUrl"
+                    class="card-img-top img-fluid object-fit-cover event-card-img"
+                    style="height: 200px"
+                    [alt]="event.title"
+                  />
+                </a>
+
+                <span
+                  class="badge position-absolute top-0 start-0 m-3 bg-success rounded-pill px-3"
+                >
+                  {{ event.category }}
                 </span>
-
-                <div class="d-flex align-items-center gap-2">
-                  <button
-                    class="btn btn-sm rounded-circle shadow-sm transition-all"
-                    (click)="toggleLike(event, $event)"
-                    [class.btn-danger]="event.isLiked"
-                    [class.btn-outline-danger]="!event.isLiked"
-                    [class.disabled]="!authService.isLoggedIn()"
-                    style="
-                      width: 36px;
-                      height: 36px;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      z-index: 10;
-                    "
-                  >
-                    <i
-                      class="bi"
-                      [class.bi-heart-fill]="event.isLiked"
-                      [class.bi-heart]="!event.isLiked"
-                    ></i>
-                  </button>
-                  <span class="fw-semibold small">{{ event.likesCount }}</span>
-                </div>
               </div>
 
-              <button
-                class="btn btn-dark px-4 mt-4 rounded-2 shadow-sm"
-                [routerLink]="['/event-page', event.id]"
-              >
-                Read More
-              </button>
+              <div class="card-body d-flex flex-column">
+                <h5 class="fw-bold mb-2">{{ event.title }}</h5>
+
+                <div class="d-flex flex-wrap gap-3 small text-muted mb-3">
+                  <span
+                    ><i class="bi bi-calendar-event me-1"></i>{{ event.date
+                    }}</span
+                  >
+                  <span><i class="bi bi-clock me-1"></i>{{ event.time }}</span>
+                  <span
+                    ><i class="bi bi-geo-alt me-1"></i>{{ event.location }}</span
+                  >
+                </div>
+
+                <div
+                  class="mt-auto d-flex justify-content-between align-items-center"
+                >
+                  <span class="fw-bold fs-5 text-dark">
+                    {{ event.price === 0 ? 'FREE' : '€' + event.price }}
+                  </span>
+
+                  <div class="d-flex align-items-center gap-2">
+                    <button
+                      class="btn btn-sm rounded-circle shadow-sm transition-all"
+                      (click)="toggleLike(event, $event)"
+                      [class.btn-danger]="event.isLiked"
+                      [class.btn-outline-danger]="!event.isLiked"
+                      [class.disabled]="!authService.isLoggedIn()"
+                      style="
+                        width: 36px;
+                        height: 36px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10;
+                      "
+                    >
+                      <i
+                        class="bi"
+                        [class.bi-heart-fill]="event.isLiked"
+                        [class.bi-heart]="!event.isLiked"
+                      ></i>
+                    </button>
+                    <span class="fw-semibold small">{{ event.likesCount }}</span>
+                  </div>
+                </div>
+
+                <button
+                  class="btn btn-dark px-4 mt-4 rounded-2 shadow-sm"
+                  [routerLink]="['/event-page', event.id]"
+                >
+                  Read More
+                </button>
+              </div>
             </div>
           </div>
+          }
         </div>
-        }
       </div>
     </div>
-  </div>
 
-  <nav class="d-flex justify-content-center mt-4">
-  <ul class="pagination">
-    <li class="page-item" [class.disabled]="currentPage === 1">
-      <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
-    </li>
-    
-    @for (page of [].constructor(totalPages); track $index) {
-      <li class="page-item" [class.active]="currentPage === $index + 1">
-        <button class="page-link" (click)="changePage($index + 1)">{{ $index + 1 }}</button>
+    <nav class="d-flex justify-content-center mt-4">
+    <ul class="pagination">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
       </li>
-    }
+      
+      @for (page of [].constructor(totalPages); track $index) {
+        <li class="page-item" [class.active]="currentPage === $index + 1">
+          <button class="page-link" (click)="changePage($index + 1)">{{ $index + 1 }}</button>
+        </li>
+      }
 
-    <li class="page-item" [class.disabled]="currentPage === totalPages">
-      <button class="page-link" (click)="changePage(currentPage + 1)">Next</button>
-    </li>
-  </ul>
-</nav>
-</div>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="changePage(currentPage + 1)">Next</button>
+      </li>
+    </ul>
+  </nav>
+  </div>
 
 

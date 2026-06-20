@@ -1,55 +1,81 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-11 col-md-6 col-lg-4">
-      <div class="card shadow border-0 p-4 rounded-3">
-        <h1 class="text-center mb-4">Sign Up</h1>
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center px-3 py-5">
+  <div class="w-100" style="max-width: 420px;">
+    <div class="card shadow border-0 p-4 rounded-3">
+      <h1 class="text-center mb-4 fs-2">Sign Up</h1>
 
-        @if (errorMessage) {
-          <div class="alert alert-danger py-2 small" role="alert">
-            {{ errorMessage }}
-          </div>
-        }
+      @if (errorMessage) {
+        <div class="alert alert-danger py-2 small" role="alert">
+          {{ errorMessage }}
+        </div>
+      }
 
-        <form (ngSubmit)="onSignup()">
-          <div class="mb-3">
-            <label class="form-label fw-bold">Username</label>
-            <input type="text" name="username" class="form-control" placeholder="Enter your username" [(ngModel)]="signupData.username" required />
-          </div>
+      <form (ngSubmit)="onSignup()">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Username</label>
+          <input
+            type="text"
+            name="username"
+            class="form-control"
+            placeholder="Enter your username"
+            [(ngModel)]="signupData.username"
+            required
+          />
+        </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-bold">Email</label>
-            <input type="email" name="email" class="form-control" placeholder="Enter your email" [(ngModel)]="signupData.email" required />
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label fw-bold">Password</label>
-            <div class="input-group">
-              <input [type]="showPassword ? 'text' : 'password'" name="password" class="form-control" placeholder="Enter your password" [(ngModel)]="signupData.password" required />
-              <button class="btn btn-outline-secondary" type="button" (click)="showPassword = !showPassword">
-                <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
-              </button>
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label fw-bold">Confirm Password</label>
-            <div class="input-group">
-              <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword" class="form-control" placeholder="Confirm your password" [(ngModel)]="signupData.confirmPassword" required />
-              <button class="btn btn-outline-secondary" type="button" (click)="showConfirmPassword = !showConfirmPassword">
-                <i class="bi" [class.bi-eye]="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword"></i>
-              </button>
-            </div>
-          </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Email</label>
+          <input
+            type="email"
+            name="email"
+            class="form-control"
+            placeholder="Enter your email"
+            [(ngModel)]="signupData.email"
+            required
+          />
+        </div>
 
-          <button type="submit" class="btn btn-success w-100 py-2 mb-3">Sign Up</button>
-
-          <div class="text-center small">
-            <p>
-              Already have an account? <a routerLink="/login" class="text-decoration-none fw-bold">Log in</a>
-            </p>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Password</label>
+          <div class="input-group">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              name="password"
+              class="form-control"
+              placeholder="Enter your password"
+              [(ngModel)]="signupData.password"
+              required
+            />
+            <button class="btn btn-outline-secondary" type="button" (click)="showPassword = !showPassword">
+              <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+            </button>
           </div>
-        </form>
-      </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Confirm Password</label>
+          <div class="input-group">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              name="confirmPassword"
+              class="form-control"
+              placeholder="Confirm your password"
+              [(ngModel)]="signupData.confirmPassword"
+              required
+            />
+            <button class="btn btn-outline-secondary" type="button" (click)="showConfirmPassword = !showConfirmPassword">
+              <i class="bi" [class.bi-eye]="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 py-2 mb-3">Sign Up</button>
+
+        <div class="text-center small">
+          <p>
+            Already have an account? <a routerLink="/login" class="text-decoration-none fw-bold">Log in</a>
+          </p>
+        </div>
+      </form>
     </div>
   </div>
 </div>

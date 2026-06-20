@@ -1,61 +1,73 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-11 col-md-6 col-lg-4">
-      <div class="card shadow border-0 p-4 rounded-3">
-        <h1 class="text-center mb-4">Login</h1>
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center px-3 py-5">
+  <div class="w-100" style="max-width: 420px;">
+    <div class="card shadow border-0 p-4 rounded-3">
+      <h1 class="text-center mb-4 fs-2">Login</h1>
 
-        @if (errorMessage) {
-          <div class="alert alert-danger py-2 small" role="alert">
-            {{ errorMessage }}
+      @if (errorMessage) {
+        <div class="alert alert-danger py-2 small" role="alert">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <form (ngSubmit)="onLogin()">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Email</label>
+          <input
+            type="email"
+            name="email"
+            class="form-control"
+            placeholder="Enter your email"
+            [(ngModel)]="loginData.email"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Password</label>
+          <div class="input-group">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              name="password"
+              class="form-control"
+              placeholder="Enter your password"
+              [(ngModel)]="loginData.password"
+              required
+            />
+            <button class="btn btn-outline-secondary" type="button" (click)="showPassword = !showPassword">
+              <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+            </button>
           </div>
-        }
+        </div>
 
-        <form (ngSubmit)="onLogin()">
-          <div class="mb-3">
-            <label class="form-label fw-bold">Email</label>
-            <input type="email" name="email" class="form-control" placeholder="Enter your email" [(ngModel)]="loginData.email" required />
-          </div>
+        <button
+          type="submit"
+          class="btn btn-success w-100 py-2 mb-3 d-flex align-items-center justify-content-center gap-2"
+          [disabled]="isLoading"
+        >
+          @if (isLoading) {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>Logging in...</span>
+          } @else {
+            <span>Login</span>
+          }
+        </button>
 
-          <div class="mb-3">
-            <label class="form-label fw-bold">Password</label>
-            <div class="input-group">
-              <input [type]="showPassword ? 'text' : 'password'" name="password" class="form-control" placeholder="Enter your password" [(ngModel)]="loginData.password" required />
-              <button class="btn btn-outline-secondary" type="button" (click)="showPassword = !showPassword">
-                <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
-              </button>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            class="btn btn-success w-100 py-2 mb-3 d-flex align-items-center justify-content-center gap-2"
-            [disabled]="isLoading"
-          >
-            @if (isLoading) {
-              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-              <span>Logging in...</span>
-            } @else {
-              <span>Login</span>
-            }
-          </button>
-
-          <div class="text-center small">
-            <p class="mb-1">
-              Forgot password? <a href="#" class="text-decoration-none fw-bold">Reset password</a>
-            </p>
-            <p class="mt-2">
-              Don't have an account? <a routerLink="/signup" class="text-decoration-none fw-bold">Sign Up</a>
-            </p>
-          </div>
-        </form>
-      </div>
+        <div class="text-center small">
+          <p class="mb-1">
+            Forgot password? <a href="#" class="text-decoration-none fw-bold">Reset password</a>
+          </p>
+          <p class="mt-2">
+            Don't have an account? <a routerLink="/signup" class="text-decoration-none fw-bold">Sign Up</a>
+          </p>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
 <!-- Success Toast -->
-<!-- @if (showSuccessToast) {
-  <div class="toast-container">
+@if (showSuccessToast) {
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
     <div class="toast show align-items-center text-bg-success border-0 shadow" role="alert" aria-live="assertive">
       <div class="d-flex">
         <div class="toast-body d-flex align-items-center gap-2">
@@ -65,4 +77,4 @@
       </div>
     </div>
   </div>
-} -->
+}
