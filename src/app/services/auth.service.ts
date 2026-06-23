@@ -42,6 +42,8 @@ export class AuthService {
     );
   }
 
+
+
   deleteAccount(): Observable<any> {
     return this.http.delete<any>(`${this.usersUrl}/me`, this.getAuthOptions());
   }
@@ -79,7 +81,7 @@ export class AuthService {
     this.currentUserEmail.set(null);
   }
 
-  private getAuthOptions() {
+  public getAuthOptions() {
     const token = localStorage.getItem('token');
     return token
       ? { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) }

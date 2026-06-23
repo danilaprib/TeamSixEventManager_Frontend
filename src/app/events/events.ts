@@ -185,27 +185,34 @@ export class Events implements OnInit {
   toggleLike(event: any, mouseEvent: MouseEvent) {
     mouseEvent.stopPropagation();
     mouseEvent.preventDefault();
-
-    const targetId = event.id;
+  
     const wasLiked = event.isLiked;
-
-    const newIsLiked = !wasLiked;
-    const newLikesCount = wasLiked ? Math.max(0, event.likesCount - 1) : event.likesCount + 1;
-
-    this.allEvents = this.allEvents.map(e => e.id === targetId ? { ...e, isLiked: newIsLiked, likesCount: newLikesCount } : e);
-    this.filteredEvents = this.filteredEvents.map(e => e.id === targetId ? { ...e, isLiked: newIsLiked, likesCount: newLikesCount } : e);
-
+    const targetId = event.id;
+  
+    // 1. Optimistic Update: Change UI immediately
+    this.updateLocalEventState(targetId, !wasLiked);
+  
+    // 2. Persist to Backend
     this.eventService.toggleEventLike(targetId, wasLiked).subscribe({
       next: () => {
-        if (this.currentSortType === 'likes') {
-          this.filterAndSortEvents();
-        }
+        // Backend success: state is now truly persisted
+        console.log('Like toggled successfully');
       },
       error: (err) => {
-        console.error(err);
-        this.allEvents = this.allEvents.map(e => e.id === targetId ? { ...e, isLiked: wasLiked, likesCount: event.likesCount } : e);
-        this.filterAndSortEvents();
+        console.error('Failed to toggle like', err);
+        // Revert if backend fails
+        this.updateLocalEventState(targetId, wasLiked);
       }
     });
   }
+
+  private updateLocalEventState(id: string, isLiked: boolean) {
+    this.allEvents = this.allEvents.map(e => 
+      e.id === id ? { ...e, isLiked, likesCount: isLiked ? e.likesCount + 1 : Math.max(0, e.likesCount - 1) } : e
+    );
+    this.filteredEvents = this.filteredEvents.map(e => 
+      e.id === id ? { ...e, isLiked, likesCount: isLiked ? e.likesCount + 1 : Math.max(0, e.likesCount - 1) } : e
+    );
+  }
+
 }

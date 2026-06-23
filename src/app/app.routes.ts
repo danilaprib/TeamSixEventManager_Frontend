@@ -27,7 +27,7 @@ export const routes: Routes =
             component: UserPage
         },
         {
-            path: 'event-page/:eventId',
+            path: 'event-page/:id',
             component: EventPageComponent
         },
         {
@@ -35,7 +35,7 @@ export const routes: Routes =
             component: CreateEventComponent
         },
         {
-            path: 'analytics/:eventId',
+            path: 'analytics/:id',
             component: Analytics
         },
         {

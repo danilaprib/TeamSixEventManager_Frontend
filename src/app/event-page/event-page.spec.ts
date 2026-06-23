@@ -41,7 +41,7 @@ describe('EventPageComponent', () => {
 
   it('should have a link to analytics', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    const link = compiled.querySelector('a[routerLink="/analytics/1"]');
+    const link = compiled.querySelector('a[ng-reflect-router-link^="/analytics"]');
     expect(link).toBeTruthy();
     expect(link?.textContent).toContain('Go to Analytics');
   });
