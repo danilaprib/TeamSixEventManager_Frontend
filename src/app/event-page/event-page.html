@@ -21,20 +21,12 @@
             <h2 id="event-title" class="h4 mb-0">
               {{ event.title || 'Event Title' }}
             </h2>
-            <button class="btn btn-light btn-sm border rounded-circle">
-              <i class="bi bi-copy"></i>
-            </button>
           </div>
           <div class="d-flex gap-2 align-items-center">
-            <button class="btn btn-outline-success btn-sm">
-              <i class="bi bi-bookmark"></i>
-            </button>
+
             <span>{{ event.likes || 0 }} Likes</span>
             <button class="btn btn-outline-danger btn-sm">
               <i class="bi bi-heart"></i>
-            </button>
-            <button class="btn btn-outline-info btn-sm">
-              <i class="bi bi-share"></i>
             </button>
           </div>
         </div>
@@ -54,6 +46,13 @@
         <div class="mb-4">
           <i class="bi bi-geo-alt-fill text-danger"></i>
           <strong>{{ event.location }}</strong>
+        </div>
+
+        <div class="mt-4 p-3 border-top">
+          <p class="text-muted mb-0">
+            <i class="bi bi-person-fill me-1"></i> Organized by:
+            <strong>{{ event.organizer?.userName || 'Unknown' }}</strong>
+          </p>
         </div>
 
         <h5>Description</h5>
@@ -139,7 +138,8 @@
               >
                 <strong>{{ comment.user?.userName || 'Anonymous' }}</strong>
                 <small class="text-muted"
-                  >{{ (comment.createdAt || comment.CreatedAt || comment.created_at) | date:'medium' }}</small
+                  >{{ (comment.createdAt || comment.CreatedAt ||
+                  comment.created_at) | date:'medium' }}</small
                 >
               </div>
               <p class="text-muted mb-0">{{ comment.content }}</p>
@@ -152,7 +152,6 @@
       </div>
     </div>
   </div>
-
 </div>
 } @else {
 <div class="container mt-5">

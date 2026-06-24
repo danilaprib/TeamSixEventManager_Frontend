@@ -3,6 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { EventService } from '../services/event.service';
+import { TagService } from '../services/tag.service';
+import { TagDto } from '../models/tag.model';
+
+interface SelectableTag extends TagDto {
+  selected: boolean;
+}
 
 @Component({
   selector: 'app-create-event',
@@ -16,37 +22,15 @@ import { EventService } from '../services/event.service';
   `,
 })
 export class CreateEventComponent implements OnInit {
+  private tagService = inject(TagService);
   private authService = inject(AuthService);
   private eventService = inject(EventService);
   private router = inject(Router);
 
   locations = ['Vilnius', 'Klaipeda', 'Kaunas', 'Siauliai', 'Panevezys'];
-  tags = [
-    { name: 'Concerts', selected: false },
-    { name: 'Football', selected: false },
-    { name: 'Basketball', selected: false },
-    { name: 'Art', selected: false },
-    { name: 'Food', selected: false },
-    { name: 'Tech', selected: false },
-    { name: 'Business', selected: false },
-    { name: 'Photography', selected: false },
-    { name: 'Marathon', selected: false },
-    { name: 'Jazz', selected: false },
-    { name: 'Classical Music', selected: false },
-    { name: 'Workshops', selected: false },
-    { name: 'Networking', selected: false },
-    { name: 'Outdoor', selected: false },
-    { name: 'Family', selected: false },
-  ];
+  tags: SelectableTag[] = [];
 
-  eventData = {
-    title: '',
-    description: '',
-    date: '',
-    time: '',
-    location: '',
-    price: 0
-  };
+  eventData: any = { title: '', description: '', date: '', time: '', location: '', price: 0, tagIds: [] };
 
   isSubmitting = false;
   errorMessage = '';
@@ -54,20 +38,35 @@ export class CreateEventComponent implements OnInit {
   jsonPreview = '';
 
   ngOnInit() {
-    if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/login']);
+
+    const roles = this.authService.getUserRoles();
+    const canCreate = roles.includes('Admin') || roles.includes('Organizer');
+
+    if (!canCreate) {
+      this.errorMessage = 'You do not have permission to create events.';
+      this.router.navigate(['/']);
+      return;
     }
 
-    this.updatePreview();
+    this.tagService.getAllTags().subscribe({
+      next: (data) => {
+        this.tags = data.map(tag => ({ ...tag, selected: false }));
+      },
+      error: (err) => console.error('Error fetching tags:', err)
+    });
   }
 
-  toggleTag(tag: any) {
+  toggleTag(tag: SelectableTag) {
     tag.selected = !tag.selected;
     this.updatePreview();
   }
 
   updatePreview() {
-    this.jsonPreview = JSON.stringify(this.buildPayload(), null, 2);
+    this.eventData.tagNames = this.tags
+      .filter(t => t.selected)
+      .map(t => t.name);
+
+    this.jsonPreview = JSON.stringify(this.eventData, null, 2);
   }
 
   onSubmit() {
@@ -95,7 +94,11 @@ export class CreateEventComponent implements OnInit {
       },
       error: (err) => {
         console.error('Create event failed:', err);
-        this.errorMessage = err.error?.message || err.error?.title || 'Failed to create event.';
+        if (err.status === 403) {
+          this.errorMessage = 'You are not authorized to create events. Only Organizers or Admins can perform this action.';
+        } else {
+          this.errorMessage = err.error?.message || err.error?.title || 'Failed to create event.';
+        }
         this.isSubmitting = false;
       }
     });
@@ -108,7 +111,7 @@ export class CreateEventComponent implements OnInit {
       date: this.eventData.date && this.eventData.time ? new Date(`${this.eventData.date}T${this.eventData.time}`).toISOString() : '',
       location: this.eventData.location,
       price: Number(this.eventData.price) || 0,
-      tagNames: this.tags.filter(tag => tag.selected).map(tag => tag.name)
+      tags: this.tags.filter(tag => tag.selected).map(tag => tag.name)
     };
   }
 }

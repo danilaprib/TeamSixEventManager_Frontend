@@ -41,11 +41,12 @@ export class Events implements OnInit {
   selectedCities: string[] = [];
 
   currentPage: number = 1;
-  itemsPerPage: number = 3;
+  itemsPerPage: number = 2;
 
   get totalPages(): number {
-    return Math.ceil(this.filteredEvents.length / this.itemsPerPage);
+    return Math.max(1, Math.ceil(this.filteredEvents.length / this.itemsPerPage));
   }
+
 
   get paginatedEvents(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
@@ -179,38 +180,42 @@ export class Events implements OnInit {
     });
 
     this.filteredEvents = result;
-    this.currentPage = 1;
+    // this.currentPage = 1;
+
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = 1;
+    }
+  }
+
+  get pagesArray(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
   toggleLike(event: any, mouseEvent: MouseEvent) {
     mouseEvent.stopPropagation();
     mouseEvent.preventDefault();
-  
+
     const wasLiked = event.isLiked;
     const targetId = event.id;
-  
-    // 1. Optimistic Update: Change UI immediately
+
     this.updateLocalEventState(targetId, !wasLiked);
-  
-    // 2. Persist to Backend
+
     this.eventService.toggleEventLike(targetId, wasLiked).subscribe({
       next: () => {
-        // Backend success: state is now truly persisted
         console.log('Like toggled successfully');
       },
       error: (err) => {
         console.error('Failed to toggle like', err);
-        // Revert if backend fails
         this.updateLocalEventState(targetId, wasLiked);
       }
     });
   }
 
   private updateLocalEventState(id: string, isLiked: boolean) {
-    this.allEvents = this.allEvents.map(e => 
+    this.allEvents = this.allEvents.map(e =>
       e.id === id ? { ...e, isLiked, likesCount: isLiked ? e.likesCount + 1 : Math.max(0, e.likesCount - 1) } : e
     );
-    this.filteredEvents = this.filteredEvents.map(e => 
+    this.filteredEvents = this.filteredEvents.map(e =>
       e.id === id ? { ...e, isLiked, likesCount: isLiked ? e.likesCount + 1 : Math.max(0, e.likesCount - 1) } : e
     );
   }

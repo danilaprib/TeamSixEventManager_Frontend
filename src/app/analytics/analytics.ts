@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from "@angular/router";
 import { AnalyticsService } from '../services/analytics.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -12,10 +12,12 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 export class Analytics implements OnInit {
   private route = inject(ActivatedRoute);
   private analyticsService = inject(AnalyticsService);
-  
+  private cdr = inject(ChangeDetectorRef);
+
   id: string | null = null;
   analyticsData: any = null;
   errorMessage = '';
+  isLoading = true;
 
   public chartOptions: any = {
     series: [{ name: 'Comments', data: [] }],
@@ -31,6 +33,7 @@ export class Analytics implements OnInit {
 
     if (!this.id) {
       this.errorMessage = 'Event id is missing.';
+      this.isLoading = false;
       return;
     }
 
@@ -38,15 +41,16 @@ export class Analytics implements OnInit {
       next: (data) => {
         this.analyticsData = data;
         this.updateCharts(data);
+        this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Failed to load analytics:', err);
+        console.error('Analytics request failed:', err);
         this.errorMessage = 'Failed to load analytics for this event.';
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
-
-
-    // console.log(`ANALYTICS: `, this.analyticsData);
   }
 
 

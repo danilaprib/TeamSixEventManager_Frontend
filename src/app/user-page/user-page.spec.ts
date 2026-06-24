@@ -50,7 +50,7 @@ describe('UserPage', () => {
 
   it('should reset all tags', () => {
     component.resetTags();
-    const allSelected = component.tags.every(t => !t.selected);
+    const allSelected = component.allTags.every(t => !t.selected);
     expect(allSelected).toBe(true);
   });
 

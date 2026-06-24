@@ -12,7 +12,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class SignupComponent {
 
-private authService = inject(AuthService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   signupData = {

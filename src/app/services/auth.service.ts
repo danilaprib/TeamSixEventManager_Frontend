@@ -42,6 +42,13 @@ export class AuthService {
     );
   }
 
+  getUserRoles(): string[] {
+    const token = localStorage.getItem('token');
+    if (!token) return [];
+    
+    const decoded: any = jwtDecode(token);
+    return decoded.role || []; 
+  }
 
 
   deleteAccount(): Observable<any> {
@@ -67,8 +74,23 @@ export class AuthService {
     return this.currentUserToken() !== null;
   }
 
+
   hasRole(role: string): boolean {
-    return this.currentUserRole() === role;
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      const decoded: any = jwtDecode(token);
+      const roles = decoded.role || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || [];
+      
+      return Array.isArray(roles) ? roles.includes(role) : roles === role;
+    } catch {
+      return false;
+    }
+  }
+
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('token');
   }
 
   logout() {

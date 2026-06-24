@@ -10,7 +10,9 @@
     <p class="text-muted mb-0">{{ analyticsData.eventTitle }}</p>
   }
   
-  @if (errorMessage) {
+  @if (isLoading) {
+    <p class="text-muted mt-4">Loading analytics...</p>
+  } @else if (errorMessage) {
     <div class="alert alert-danger mt-4">{{ errorMessage }}</div>
   } @else if (analyticsData) {
     <div class="row g-3 mt-4">
@@ -36,12 +38,16 @@
 
     <div class="card mt-4 p-4">
       <h6 class="fw-bold mb-4">Comments Written Per Day</h6>
-      <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" 
-                 [xaxis]="chartOptions.xaxis" [colors]="chartOptions.colors" 
-                 [plotOptions]="chartOptions.plotOptions">
-      </apx-chart>
+      @if (analyticsData.commentsPerDay?.length) {
+        <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" 
+                   [xaxis]="chartOptions.xaxis" [colors]="chartOptions.colors" 
+                   [plotOptions]="chartOptions.plotOptions">
+        </apx-chart>
+      } @else {
+        <p class="text-muted mb-0">No comments yet.</p>
+      }
     </div>
   } @else {
-    <p class="text-muted mt-4">Loading analytics...</p>
+    <div class="alert alert-warning mt-4">No analytics data was returned for this event.</div>
   }
 </div>

@@ -1,20 +1,40 @@
-<nav class="navbar navbar-expand-md navbar-light bg-white sticky-top border-bottom shadow-sm px-3" style="min-height: 70px;">
+<nav
+  class="navbar navbar-expand-md navbar-light bg-white sticky-top border-bottom shadow-sm px-3"
+  style="min-height: 70px"
+>
   <div class="container-fluid px-2">
-
     <a class="navbar-brand p-0" routerLink="/">
-      <img class="logo" src="./assets/icons/logo.svg" alt="EVENTS_MANAGER" style="width: 55px; height: 55px" />
+      <img
+        class="logo"
+        src="./assets/icons/logo.svg"
+        alt="EVENTS_MANAGER"
+        style="width: 55px; height: 55px"
+      />
     </a>
 
     <div class="d-flex d-md-none align-items-center gap-2 ms-auto me-2">
       @if (authService.isLoggedIn()) {
-        <span class="text-dark fw-bold small">{{ authService.currentUsername() }}</span>
-        <a routerLink="/user-page" class="rounded-circle bg-light p-2 hover-green">
-          <img src="./assets/icons/user.svg" style="width: 22px; height: 22px" alt="User Profile" />
-        </a>
+      <span class="text-dark fw-bold small"
+        >{{ authService.currentUsername() }}</span
+      >
+      <a
+        routerLink="/user-page"
+        class="rounded-circle bg-light p-2 hover-green"
+      >
+        <img
+          src="./assets/icons/user.svg"
+          style="width: 22px; height: 22px"
+          alt="User Profile"
+        />
+      </a>
       } @else {
-        <a routerLink="/login" class="rounded-circle bg-light p-2 hover-green">
-          <img src="./assets/icons/user.svg" style="width: 22px; height: 22px" alt="User Profile" />
-        </a>
+      <a routerLink="/login" class="rounded-circle bg-light p-2 hover-green">
+        <img
+          src="./assets/icons/user.svg"
+          style="width: 22px; height: 22px"
+          alt="User Profile"
+        />
+      </a>
       }
     </div>
 
@@ -31,61 +51,104 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navContent">
+      <ul
+        class="navbar-nav mx-auto mb-2 mb-md-0 align-items-md-center text-center text-md-start"
+      >
+        <li class="nav-item">
+          <a
+            class="nav-link fs-4 text-dark px-3 hover-green rounded-3"
+            routerLink="/events"
+            >EVENTS</a
+          >
+        </li>
 
-      <ul class="navbar-nav mx-auto mb-2 mb-md-0 align-items-md-center text-center text-md-start">
+        @if (authService.hasRole('Admin') || authService.hasRole('Organizer')) {
         <li class="nav-item">
-          <a class="nav-link fs-4 text-dark px-3 hover-green rounded-3" routerLink="/events">EVENTS</a>
+          <a
+            class="nav-link fs-4 text-dark px-3 hover-green rounded-3"
+            routerLink="/create-event"
+            >CREATE</a
+          >
         </li>
+        }
+
         <li class="nav-item">
-          <a class="nav-link fs-4 text-dark px-3 hover-green rounded-3" routerLink="/create-event">CREATE</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link fs-4 text-dark px-3 hover-green rounded-3" routerLink="/about">ABOUT</a>
+          <a
+            class="nav-link fs-4 text-dark px-3 hover-green rounded-3"
+            routerLink="/about"
+            >ABOUT</a
+          >
         </li>
       </ul>
 
-      <ul class="navbar-nav d-none d-md-flex align-items-center gap-3 mb-2 mb-md-0">
+      <ul
+        class="navbar-nav d-none d-md-flex align-items-center gap-3 mb-2 mb-md-0"
+      >
         @if (authService.isLoggedIn()) {
-          <li class="nav-item">
-            <span class="text-dark fw-bold small">{{ authService.currentUsername() }}</span>
-          </li>
-          <li class="nav-item">
-            <a routerLink="/user-page" class="rounded-circle bg-light p-2 hover-green d-inline-flex">
-              <img src="./assets/icons/user.svg" style="width: 25px; height: 25px" alt="User Profile" />
-            </a>
-          </li>
-          <li class="nav-item">
-            <button
-              class="btn btn-link text-dark hover-green p-2 rounded-3 text-decoration-none fs-4 border-0 m-0 bg-transparent"
-              (click)="logout()"
-            >
-              LOGOUT
-            </button>
-          </li>
+        <li class="nav-item">
+          <span class="text-dark fw-bold small"
+            >{{ authService.currentUsername() }}</span
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            routerLink="/user-page"
+            class="rounded-circle bg-light p-2 hover-green d-inline-flex"
+          >
+            <img
+              src="./assets/icons/user.svg"
+              style="width: 25px; height: 25px"
+              alt="User Profile"
+            />
+          </a>
+        </li>
+        <li class="nav-item">
+          <button
+            class="btn btn-link text-dark hover-green p-2 rounded-3 text-decoration-none fs-4 border-0 m-0 bg-transparent"
+            (click)="logout()"
+          >
+            LOGOUT
+          </button>
+        </li>
         } @else {
-          <li class="nav-item">
-            <a class="link text-dark hover-green p-2 rounded-3 text-decoration-none fs-4" routerLink="/login">LOGIN</a>
-          </li>
-          <li class="nav-item">
-            <a class="link text-dark hover-green p-2 rounded-3 text-decoration-none fs-4" routerLink="/signup">SIGN UP</a>
-          </li>
+        <li class="nav-item">
+          <a
+            class="link text-dark hover-green p-2 rounded-3 text-decoration-none fs-4"
+            routerLink="/login"
+            >LOGIN</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="link text-dark hover-green p-2 rounded-3 text-decoration-none fs-4"
+            routerLink="/signup"
+            >SIGN UP</a
+          >
+        </li>
         }
       </ul>
 
       <div class="d-md-none border-top mt-2 pt-2 text-center">
         @if (authService.isLoggedIn()) {
-          <button
-            class="btn btn-link text-dark text-decoration-none fs-5 w-100 hover-green rounded-3"
-            (click)="logout()"
-          >
-            LOGOUT
-          </button>
+        <button
+          class="btn btn-link text-dark text-decoration-none fs-5 w-100 hover-green rounded-3"
+          (click)="logout()"
+        >
+          LOGOUT
+        </button>
         } @else {
-          <a class="nav-link fs-5 text-dark py-2 hover-green rounded-3" routerLink="/login">LOGIN</a>
-          <a class="nav-link fs-5 text-dark py-2 hover-green rounded-3" routerLink="/signup">SIGN UP</a>
+        <a
+          class="nav-link fs-5 text-dark py-2 hover-green rounded-3"
+          routerLink="/login"
+          >LOGIN</a
+        >
+        <a
+          class="nav-link fs-5 text-dark py-2 hover-green rounded-3"
+          routerLink="/signup"
+          >SIGN UP</a
+        >
         }
       </div>
-
     </div>
   </div>
 </nav>
