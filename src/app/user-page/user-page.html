@@ -13,16 +13,68 @@
       <h4 class="w-100 text-center">{{ authService.currentUsername() }}</h4>
 
       <!-- roles -->
-       
+
       <!-- <span class="badge bg-success text-white align-self-center mb-3"
         >Role: {{ authService.currentUserRole() }}</span
       > -->
 
-      <div class="d-flex flex-wrap gap-2 justify-content-center mb-3">
+      <!-- <div class="d-flex flex-wrap gap-2 justify-content-center mb-3">
         @for (role of userRoles; track role) {
         <span class="badge bg-success text-white">{{ role }}</span>
         }
+      </div> -->
+
+      <!-- Account Role -->
+      <div class="d-flex align-items-center justify-content-between mb-3 w-100">
+        <h5 class="m-0">Account Role</h5>
+        <span class="badge bg-info text-dark fs-6"
+          >{{ authService.currentUserRole() }}</span
+        >
       </div>
+
+      <hr class="w-100" />
+
+      <!-- Organizer Status -->
+      <div class="d-flex align-items-center justify-content-between w-100 mb-2">
+        <h5 class="m-0">Organizer Status</h5>
+      </div>
+
+      @if (authService.currentUserRole() === 'Organizer' ||
+      authService.currentUserRole() === 'Admin') {
+      <p class="text-success small">
+        You are already an {{ authService.currentUserRole() }}!
+      </p>
+      } @else if (requestStatus === 'Pending') {
+      <p class="text-warning small">Your request is under review.</p>
+      } @else if (requestStatus === 'Approved') {
+      <p class="text-success small">Organizer request approved!</p>
+      } @else { @if (!isRequesting) {
+      <button
+        class="btn btn-outline-primary btn-sm w-100"
+        (click)="isRequesting = true"
+      >
+        Make Organizer Request
+      </button>
+      } @else {
+      <div class="mt-2 w-100">
+        <textarea
+          class="form-control mb-2"
+          [(ngModel)]="requestReason"
+          placeholder="Enter reason..."
+        ></textarea>
+        <div class="d-flex gap-2">
+          <button
+            class="btn btn-success btn-sm flex-grow-1"
+            (click)="submitOrganizerRequest()"
+          >
+            Confirm
+          </button>
+          <button class="btn btn-light btn-sm" (click)="isRequesting = false">
+            Cancel
+          </button>
+        </div>
+      </div>
+      } }
 
       <a
         class="cursor-pointer align-items-center justify-content-start w-100 gap-2 p-2 text-decoration-none text-dark rounded hover-gray"
@@ -77,94 +129,19 @@
       <div class="p-4 rounded-3 shadow border bg-white">
         @if (activeTab === 'profile') {
         <h5>Account Settings</h5>
-        <div class="mb-3">
-          <label class="form-label">Username</label>
-          <input
-            class="form-control"
-            name="profileUsername"
-            [(ngModel)]="profileData.username"
-          />
-        </div>
 
         <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input
-            class="form-control"
-            name="profileEmail"
-            [(ngModel)]="profileData.email"
-          />
-        </div>
-
-        <button class="btn btn-success px-4 mb-4">Save Changes</button>
-
-        <hr />
-
-        <h5>Change Password</h5>
-
-        <div class="mb-3">
-          <label class="form-label">Current Password</label>
-          <div class="input-group">
-            <input
-              [type]="showCurrentPassword ? 'text' : 'password'"
-              class="form-control"
-            />
-            <button
-              class="btn btn-outline-secondary"
-              type="button"
-              (click)="showCurrentPassword = !showCurrentPassword"
-            >
-              <i
-                class="bi"
-                [class.bi-eye]="showCurrentPassword"
-                [class.bi-eye-slash]="!showCurrentPassword"
-              ></i>
-            </button>
+          <label class="form-label text-muted small">Username</label>
+          <div class="p-2 bg-light border rounded">
+            {{ profileData.username }}
           </div>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">New Password</label>
-          <div class="input-group">
-            <input
-              [type]="showNewPassword ? 'text' : 'password'"
-              class="form-control"
-            />
-            <button
-              class="btn btn-outline-secondary"
-              type="button"
-              (click)="showNewPassword = !showNewPassword"
-            >
-              <i
-                class="bi"
-                [class.bi-eye]="showNewPassword"
-                [class.bi-eye-slash]="!showNewPassword"
-              ></i>
-            </button>
-          </div>
+          <label class="form-label text-muted small">Email</label>
+          <div class="p-2 bg-light border rounded">{{ profileData.email }}</div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Confirm New Password</label>
-          <div class="input-group">
-            <input
-              [type]="showConfirmPassword ? 'text' : 'password'"
-              class="form-control"
-            />
-            <button
-              class="btn btn-outline-secondary"
-              type="button"
-              (click)="showConfirmPassword = !showConfirmPassword"
-            >
-              <i
-                class="bi"
-                [class.bi-eye]="showConfirmPassword"
-                [class.bi-eye-slash]="!showConfirmPassword"
-              ></i>
-            </button>
-          </div>
-        </div>
-
-        <button class="btn btn-secondary">Change Password</button>
         } @if (activeTab === 'liked') {
         <div class="d-flex justify-items-start align-items-center gap-2 mb-3">
           <i class="bi bi-heart text-danger"></i>

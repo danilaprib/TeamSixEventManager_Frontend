@@ -1,13 +1,15 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { EventService } from '../services/event.service';
 import { AuthService } from '../services/auth.service';
+import { FormsModule } from '@angular/forms';
+
 
 @Component({
   selector: 'app-events',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   templateUrl: './events.html',
   styles: `
     .btn-green {
@@ -31,7 +33,12 @@ import { AuthService } from '../services/auth.service';
 export class Events implements OnInit {
   public authService = inject(AuthService);
   public eventService = inject(EventService);
+  public searchQuery: string = '';
   private router = inject(Router);
+
+  private cdr = inject(ChangeDetectorRef);
+
+  public fallbackImage: string = 'assets/images/default.jpg';
 
   isSortingAscending: boolean = false;
   currentSortType: string = 'date';
@@ -41,7 +48,7 @@ export class Events implements OnInit {
   selectedCities: string[] = [];
 
   currentPage: number = 1;
-  itemsPerPage: number = 2;
+  itemsPerPage: number = 6;
 
   get totalPages(): number {
     return Math.max(1, Math.ceil(this.filteredEvents.length / this.itemsPerPage));
@@ -83,6 +90,7 @@ export class Events implements OnInit {
         const url = event.urlAfterRedirects;
         if (url === '/' || url === '/events') {
           this.loadEvents();
+
         }
       });
   }
@@ -93,19 +101,10 @@ export class Events implements OnInit {
         const currentUserId = this.authService.currentUserId() || localStorage.getItem('userId');
 
         this.allEvents = backendData.map(item => {
-          const tagsArray = item.EventTags || item.eventTags;
-          const firstTagEntity = tagsArray && tagsArray[0];
-          const tagObj = firstTagEntity ? (firstTagEntity.Tag || firstTagEntity.tag) : null;
-          const firstTag = tagObj ? (tagObj.Name || tagObj.name || '').toLowerCase() : '';
+          const tagsArray = item.tags || item.Tags;
 
-          let selectedImage = 'assets/images/default.jpg';
-          if (firstTag.includes('sport') || firstTag.includes('basketball') || firstTag.includes('football')) {
-            selectedImage = 'assets/images/sports.jpg';
-          } else if (firstTag.includes('music') || firstTag.includes('concert')) {
-            selectedImage = 'assets/images/music.jpg';
-          } else if (firstTag.includes('outdoor') || firstTag.includes('nature')) {
-            selectedImage = 'assets/images/outdoors.jpg';
-          }
+          const hasFirstTag = tagsArray && tagsArray.length > 0;
+          const firstTag = tagsArray[0];
 
           const likesList: any[] = item.eventLikes || item.EventLikes || [];
 
@@ -123,14 +122,16 @@ export class Events implements OnInit {
             location: item.Location || item.location || 'Unknown',
             category: firstTag ? firstTag.toUpperCase() : 'EVENT',
             price: item.price ?? item.Price ?? 0,
-            imageUrl: selectedImage,
+            imageUrl: item.imageUrl || this.fallbackImage,
             isLiked: userHasLiked,
-            likesCount: likesList.length
+            likesCount: item.likes ?? item.Likes ?? 0,
+            isAttending: false,
           };
         });
 
         this.filteredEvents = [...this.allEvents];
         this.filterAndSortEvents();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error(err);
@@ -143,6 +144,24 @@ export class Events implements OnInit {
     this.filterAndSortEvents();
   }
 
+  toggleAttendance(event: any, mouseEvent: MouseEvent) {
+    mouseEvent.stopPropagation();
+    if (!this.authService.isLoggedIn()) return;
+
+    const previousState = event.isAttending;
+    event.isAttending = !previousState;
+
+    this.eventService.toggleEventAttendance(event.id, previousState).subscribe({
+      next: () => {
+        this.loadEvents();
+      },
+      error: () => {
+        event.isAttending = previousState;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   setSortType(type: string) {
     this.currentSortType = type;
     this.filterAndSortEvents();
@@ -151,10 +170,19 @@ export class Events implements OnInit {
   filterAndSortEvents() {
     let result = [...this.allEvents];
 
+
+    if (this.searchQuery.trim() !== '') {
+      const query = this.searchQuery.toLowerCase();
+      result = result.filter(e =>
+        e.title.toLowerCase().includes(query)
+        // e.description.toLowerCase().includes(query) // comment this line out to NOT search by description
+      );
+    }
+
     if (this.selectedCities.length > 0) {
       result = result.filter(e =>
         this.selectedCities.some(selected =>
-          e.location.toLowerCase() === selected.toLowerCase()
+          e.location.toLowerCase().includes(selected.toLowerCase())
         )
       );
     }
@@ -180,7 +208,7 @@ export class Events implements OnInit {
     });
 
     this.filteredEvents = result;
-    // this.currentPage = 1;
+
 
     if (this.currentPage > this.totalPages) {
       this.currentPage = 1;
@@ -193,20 +221,17 @@ export class Events implements OnInit {
 
   toggleLike(event: any, mouseEvent: MouseEvent) {
     mouseEvent.stopPropagation();
-    mouseEvent.preventDefault();
+    if (!this.authService.isLoggedIn()) return;
 
-    const wasLiked = event.isLiked;
-    const targetId = event.id;
+    event.isLiked = !event.isLiked;
 
-    this.updateLocalEventState(targetId, !wasLiked);
-
-    this.eventService.toggleEventLike(targetId, wasLiked).subscribe({
+    this.eventService.toggleEventLike(event.id, !event.isLiked).subscribe({
       next: () => {
-        console.log('Like toggled successfully');
+        this.loadEvents();
       },
-      error: (err) => {
-        console.error('Failed to toggle like', err);
-        this.updateLocalEventState(targetId, wasLiked);
+      error: () => {
+        event.isLiked = !event.isLiked;
+        this.cdr.detectChanges();
       }
     });
   }

@@ -7,6 +7,7 @@ import { SignupComponent } from './signup/signup';
 import { EventPageComponent } from './event-page/event-page';
 import { Analytics } from './analytics/analytics';
 import { CreateEventComponent } from './create-event/create-event';
+import { AdminComponent } from './admin/admin';
 
 export const routes: Routes =
     [
@@ -49,6 +50,11 @@ export const routes: Routes =
         {
             path: 'signup',
             component: SignupComponent
+        },
+        {
+            path: 'admin',
+            component: AdminComponent
         }
+
 
     ];

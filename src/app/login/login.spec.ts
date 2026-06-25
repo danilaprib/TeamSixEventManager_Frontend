@@ -4,7 +4,7 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { LoginComponent } from './login';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, Subject  } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
@@ -40,28 +40,36 @@ describe('LoginComponent UI and Logic', () => {
   });
 
   it('should navigate to /events after a successful login', () => {
-    authServiceSpy.login.and.returnValue(of({})); 
-    
+    authServiceSpy.login.and.returnValue(of({}));
+
     component.onLogin();
-    
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/events']);
+
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
   });
 
   it('should disable the submit button when isLoading is true', () => {
     component.isLoading = true;
     fixture.detectChanges();
-    
+
     const button = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
     expect(button.disabled).toBe(true);
   });
 
 
-    it('should set isLoading to true on login attempt', () => {
-    authServiceSpy.login.and.returnValue(of({})); 
-    
+  it('should set isLoading to true while login is in progress', () => {
+  const subject = new Subject<any>();
+  authServiceSpy.login.and.returnValue(subject.asObservable());
+  component.onLogin();
+  expect(component.isLoading).toBe(true);
+  subject.complete();
+});
+
+
+  it('should call authService.login with loginData', () => {
+    authServiceSpy.login.and.returnValue(of({}));
+    component.loginData = { email: 'a@b.com', password: '123' };
     component.onLogin();
-    
-    expect(component.isLoading).toBe(true);
+    expect(authServiceSpy.login).toHaveBeenCalledWith({ email: 'a@b.com', password: '123' });
   });
 
 });

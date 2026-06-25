@@ -62,12 +62,20 @@
           >
         </li>
 
-        @if (authService.hasRole('Admin') || authService.hasRole('Organizer')) {
+        @if (authService.hasRole('Organizer')) {
         <li class="nav-item">
           <a
             class="nav-link fs-4 text-dark px-3 hover-green rounded-3"
             routerLink="/create-event"
             >CREATE</a
+          >
+        </li>
+        } @if (authService.hasRole('Admin')) {
+        <li class="nav-item">
+          <a
+            class="nav-link fs-4 text-dark px-3 hover-green rounded-3"
+            routerLink="/admin"
+            >ADMIN</a
           >
         </li>
         }

@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, timeout, catchError, of } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
@@ -8,8 +8,10 @@ import { jwtDecode } from 'jwt-decode';
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private baseUrl = 'https://teamsixeventmanager-backend-develop.onrender.com/api/auth';
+  private authUrl = 'https://teamsixeventmanager-backend-develop.onrender.com/api/auth';
   private usersUrl = 'https://teamsixeventmanager-backend-develop.onrender.com/api/users';
+
+  private currentUser: any = null;
 
   currentUserToken = signal<string | null>(localStorage.getItem('token'));
   currentUserRole = signal<string | null>(localStorage.getItem('role'));
@@ -22,16 +24,23 @@ export class AuthService {
   }
 
   register(credentials: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/register`, credentials);
+    return this.http.post<any>(`${this.authUrl}/register`, credentials);
   }
 
   login(credentials: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/login`, credentials).pipe(
+    return this.http.post<any>(`${this.authUrl}/login`, credentials).pipe(
+      timeout(10000),
+      catchError((error) => {
+        if (error.name === 'TimeoutError') {
+          return of({ error: 'Request timed out. Please try again.' });
+        }
+        throw error;
+      }),
       tap((response: any) => {
         if (response && response.token) {
           localStorage.setItem('token', response.token);
           this.currentUserToken.set(response.token);
-          
+
           const userRole = response.role || 'User';
           localStorage.setItem('role', userRole);
           this.currentUserRole.set(userRole);
@@ -42,12 +51,25 @@ export class AuthService {
     );
   }
 
+  updateUserRole(newRole: string) {
+    if (this.currentUser) {
+      this.currentUser.role = newRole;
+    }
+  }
+
+  
+
   getUserRoles(): string[] {
     const token = localStorage.getItem('token');
     if (!token) return [];
-    
-    const decoded: any = jwtDecode(token);
-    return decoded.role || []; 
+
+    try {
+      const decoded: any = jwtDecode(token);
+      const roles = decoded.role || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || [];
+      return Array.isArray(roles) ? roles : [roles];
+    } catch {
+      return [];
+    }
   }
 
 

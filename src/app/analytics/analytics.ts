@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from "@angular/router";
 import { AnalyticsService } from '../services/analytics.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { EventService } from '../services/event.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-analytics',
@@ -10,6 +12,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
   templateUrl: './analytics.html',
 })
 export class Analytics implements OnInit {
+  private eventService = inject(EventService);
   private route = inject(ActivatedRoute);
   private analyticsService = inject(AnalyticsService);
   private cdr = inject(ChangeDetectorRef);
@@ -37,20 +40,43 @@ export class Analytics implements OnInit {
       return;
     }
 
-    this.analyticsService.getAnalytics(this.id).subscribe({
-      next: (data) => {
-        this.analyticsData = data;
-        this.updateCharts(data);
+
+    forkJoin({
+      analytics: this.analyticsService.getAnalytics(this.id),
+      event: this.eventService.getEventById(this.id)
+    }).subscribe({
+      next: ({ analytics, event }) => {
+        this.analyticsData = {
+          ...analytics,
+          totalLikes: event.likes ?? event.Likes ?? analytics.totalLikes,
+          totalAttendees: event.attendees ?? event.Attendees ?? analytics.totalAttendees
+        };
+        
+        this.updateCharts(this.analyticsData);
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Analytics request failed:', err);
-        this.errorMessage = 'Failed to load analytics for this event.';
+        this.errorMessage = 'Failed to load data for this event.';
         this.isLoading = false;
         this.cdr.detectChanges();
       }
     });
+
+    // this.analyticsService.getAnalytics(this.id).subscribe({
+    //   next: (data) => {
+    //     this.analyticsData = data;
+    //     this.updateCharts(data);
+    //     this.isLoading = false;
+    //     this.cdr.detectChanges();
+    //   },
+    //   error: (err) => {
+    //     console.error('Analytics request failed:', err);
+    //     this.errorMessage = 'Failed to load analytics for this event.';
+    //     this.isLoading = false;
+    //     this.cdr.detectChanges();
+    //   }
+    // });
   }
 
 

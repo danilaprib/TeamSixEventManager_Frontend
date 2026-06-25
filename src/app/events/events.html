@@ -11,9 +11,12 @@
         </button>
 
         <input
+          id="search-input"
           type="text"
           class="form-control border-start-0"
           placeholder="Search events..."
+          [(ngModel)]="searchQuery"
+          (input)="filterAndSortEvents()"
         />
       </div>
     </div>
@@ -185,12 +188,6 @@
                   [alt]="event.title"
                 />
               </a>
-
-              <span
-                class="badge position-absolute top-0 start-0 m-3 bg-success rounded-pill px-3"
-              >
-                {{ event.category }}
-              </span>
             </div>
 
             <div class="card-body d-flex flex-column">
@@ -211,10 +208,33 @@
                 class="mt-auto d-flex justify-content-between align-items-center"
               >
                 <span class="fw-bold fs-5 text-dark">
-                  {{ event.price === 0 ? 'FREE' : '€' + event.price }}
+                  <!-- commented out temporarily until endpoint inlcudes 'price' field -->
+                  <!-- {{ event.price === 0 ? 'FREE' : (event.price | currency) }} -->
                 </span>
 
                 <div class="d-flex align-items-center gap-2">
+                  <button
+                    class="btn btn-sm rounded-circle shadow-sm transition-all"
+                    (click)="toggleAttendance(event, $event)"
+                    [class.btn-success]="event.isAttending"
+                    [class.btn-outline-success]="!event.isAttending"
+                    [class.disabled]="!authService.isLoggedIn()"
+                    style="
+                      width: 36px;
+                      height: 36px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      z-index: 10;
+                    "
+                  >
+                    <i
+                      class="bi"
+                      [class.bi-check-circle-fill]="event.isAttending"
+                      [class.bi-plus-circle]="!event.isAttending"
+                    ></i>
+                  </button>
+
                   <button
                     class="btn btn-sm rounded-circle shadow-sm transition-all"
                     (click)="toggleLike(event, $event)"

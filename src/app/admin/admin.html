@@ -1,0 +1,99 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Admin Dashboard</h2>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <p class="text-muted">Loading...</p>
+  }
+
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'requests'" (click)="activeTab = 'requests'">Organizer Requests</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">Users</button>
+    </li>
+  </ul>
+
+  <div class="p-4 border border-top-0">
+    @if (activeTab === 'requests') {
+      @if (requests.length === 0) {
+        <p class="text-muted">No organizer requests found.</p>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (req of requests; track req.userId) {
+              <tr>
+                <td>{{ req.username }}</td>
+                <td>{{ req.reason }}</td>
+                <td>
+                  @if (req.status === 1) {
+                    <span class="badge bg-warning">Pending</span>
+                  } @else if (req.status === 2) {
+                    <span class="badge bg-success">Approved</span>
+                  } @else if (req.status === 3) {
+                    <span class="badge bg-danger">Disapproved</span>
+                  }
+                </td>
+                <td>
+                  @if (!req.isFinalized) {
+                    <button class="btn btn-success btn-sm me-2" (click)="approve(req.userId)">Approve</button>
+                    <button class="btn btn-danger btn-sm" (click)="disapprove(req.userId)">Disapprove</button>
+                  } @else {
+                    <span class="text-muted">Finalized</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    } @else {
+      @if (users.length === 0) {
+        <p class="text-muted">No users found.</p>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of users; track user.id) {
+              <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  @if (user.isBlocked) {
+                    <span class="badge bg-danger">Blocked</span>
+                  } @else {
+                    <span class="badge bg-success">Active</span>
+                  }
+                </td>
+                <td>
+                  <button class="btn btn-sm" [class.btn-danger]="!user.isBlocked" [class.btn-success]="user.isBlocked" (click)="toggleBlock(user)">
+                    {{ user.isBlocked ? 'Unblock' : 'Block' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    }
+  </div>
+</div>

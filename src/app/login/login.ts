@@ -50,6 +50,10 @@ export class LoginComponent {
       )
       .subscribe({
         next: (res) => {
+          if (res.error) {
+            this.errorMessage = res.error;
+            return;
+          }
           this.showSuccessToast = true;
           this.router.navigate(['/events']);
         },
@@ -57,6 +61,10 @@ export class LoginComponent {
           console.error('Login failed:', err);
           if (err.status === 401) {
             this.errorMessage = 'Invalid email or password.';
+          } else if (err.status === 403) {
+            this.errorMessage = 'You have been blocked. Please contact an administrator.';
+          } else if (err.name === 'TimeoutError') {
+            this.errorMessage = 'Request timed out. Please try again.';
           } else {
             this.errorMessage = 'Server error. Please try again later.';
           }

@@ -25,16 +25,26 @@ export class UserPage implements OnInit {
   private eventService = inject(EventService);
   private router = inject(Router);
 
-  showCurrentPassword = false;
-  showNewPassword = false;
-  showConfirmPassword = false;
+  // showCurrentPassword = false;
+  // showNewPassword = false;
+  // showConfirmPassword = false;
   activeTab: string = 'profile';
   likedEvents: any[] = [];
   likedEventsError = '';
   profileData = { username: '', email: '' };
   allTags: any[] = [];
 
+
+
+  isRequesting = false;
+  requestReason = '';
+  requestStatus: string = 'None';
+
   ngOnInit() {
+
+    this.loadOrganizerStatus();
+    this.refreshUserData();
+
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/login']);
       return;
@@ -48,11 +58,41 @@ export class UserPage implements OnInit {
     this.loadLikedEvents();
   }
 
+  refreshUserData() {
+  this.userService.getCurrentUserProfile().subscribe((user: any) => {
+    this.authService.updateUserRole(user.role); 
+  });
+}
+
   loadUserInterests() {
     this.userService.getMyTags().subscribe(savedTags => {
       this.allTags.forEach(tag => {
         if (savedTags.some(s => s.id === tag.id)) tag.selected = true;
       });
+    });
+
+    this.loadOrganizerStatus();
+
+  }
+
+
+  loadOrganizerStatus() {
+    this.userService.getOrganizerRequestStatus().subscribe({
+      next: (res: any) => {
+        const statusMap: any = { 1: 'Pending', 2: 'Approved', 3: 'Disapproved' };
+        this.requestStatus = statusMap[res.status] || 'None';
+      },
+      error: () => this.requestStatus = 'None'
+    });
+  }
+
+  submitOrganizerRequest() {
+    if (!this.requestReason) return;
+
+    this.userService.submitOrganizerRequest(this.requestReason).subscribe(() => {
+      this.isRequesting = false;
+      this.requestStatus = 'Pending';
+      alert('Request submitted successfully!');
     });
   }
 

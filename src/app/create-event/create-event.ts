@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -27,7 +27,9 @@ export class CreateEventComponent implements OnInit {
   private eventService = inject(EventService);
   private router = inject(Router);
 
-  locations = ['Vilnius', 'Klaipeda', 'Kaunas', 'Siauliai', 'Panevezys'];
+  private cdr = inject(ChangeDetectorRef);
+
+  // locations = ['Vilnius', 'Klaipeda', 'Kaunas', 'Siauliai', 'Panevezys'];
   tags: SelectableTag[] = [];
 
   eventData: any = { title: '', description: '', date: '', time: '', location: '', price: 0, tagIds: [] };
@@ -38,9 +40,8 @@ export class CreateEventComponent implements OnInit {
   jsonPreview = '';
 
   ngOnInit() {
-
     const roles = this.authService.getUserRoles();
-    const canCreate = roles.includes('Admin') || roles.includes('Organizer');
+    const canCreate = roles.includes('Organizer');
 
     if (!canCreate) {
       this.errorMessage = 'You do not have permission to create events.';
@@ -51,10 +52,18 @@ export class CreateEventComponent implements OnInit {
     this.tagService.getAllTags().subscribe({
       next: (data) => {
         this.tags = data.map(tag => ({ ...tag, selected: false }));
+        this.updatePreview();
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error fetching tags:', err)
     });
   }
+
+  deselectAllTags() {
+    this.tags.forEach(tag => tag.selected = false);
+    this.updatePreview();
+  }
+
 
   toggleTag(tag: SelectableTag) {
     tag.selected = !tag.selected;
