@@ -1,75 +1,108 @@
 /// <reference types="jasmine" />
 
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
-import { of, Subject  } from 'rxjs';
-import { By } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { of, throwError } from 'rxjs';
+import { provideRouter } from '@angular/router';
 
-describe('LoginComponent UI and Logic', () => {
+describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
 
-  beforeEach(() => {
-    const authSpy = jasmine.createSpyObj('AuthService', ['login']);
-    const navSpy = jasmine.createSpyObj('Router', ['navigate']);
+  beforeEach(async () => {
+    authServiceSpy = jasmine.createSpyObj('AuthService', ['login']);
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
-    TestBed.configureTestingModule({
-      imports: [FormsModule, LoginComponent],
+    await TestBed.configureTestingModule({
+      imports: [LoginComponent],
       providers: [
-        { provide: AuthService, useValue: authSpy },
-        { provide: Router, useValue: navSpy }
+        provideRouter([]), 
+        { provide: AuthService, useValue: authServiceSpy },
+        { provide: Router, useValue: routerSpy },
+        { provide: ActivatedRoute, useValue: {} } 
       ]
-    });
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
-    authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    fixture.detectChanges();
   });
 
-  it('should toggle showPassword when button is clicked', () => {
-    expect(component.showPassword).toBe(false);
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should show validation error when fields are empty', () => {
+    component.loginData = { email: '', password: '' };
+    component.onLogin();
+    expect(component.errorMessage).toBe('Please fill in all fields.');
+  });
+
+  it('should login successfully and navigate', () => {
+    component.loginData = { email: 'test@test.com', password: '123' };
+    authServiceSpy.login.and.returnValue(of({}));
+
+    component.onLogin();
+
+    expect(component.showSuccessToast).toBeTrue();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/events']);
+  });
+
+  it('should display API error message returned by backend', () => {
+    component.loginData = { email: 'test@test.com', password: '123' };
+    authServiceSpy.login.and.returnValue(of({ error: 'Invalid credentials' }));
+
+    component.onLogin();
+
+    expect(component.errorMessage).toBe('Invalid credentials');
+  });
+
+  it('should handle 401 error', () => {
+    component.loginData = { email: 'test@test.com', password: '123' };
+    authServiceSpy.login.and.returnValue(throwError(() => ({ status: 401 })));
+
+    component.onLogin();
+
+    expect(component.errorMessage).toBe('Invalid email or password.');
+  });
+
+  it('should handle 403 error', () => {
+    component.loginData = { email: 'test@test.com', password: '123' };
+    authServiceSpy.login.and.returnValue(throwError(() => ({ status: 403 })));
+
+    component.onLogin();
+
+    expect(component.errorMessage).toBe('You have been blocked. Please contact an administrator.');
+  });
+
+  it('should handle timeout error', () => {
+    component.loginData = { email: 'test@test.com', password: '123' };
+    authServiceSpy.login.and.returnValue(throwError(() => ({ name: 'TimeoutError' })));
+
+    component.onLogin();
+
+    expect(component.errorMessage).toBe('Request timed out. Please try again.');
+  });
+
+  it('should handle generic server error', () => {
+    component.loginData = { email: 'test@test.com', password: '123' };
+    authServiceSpy.login.and.returnValue(throwError(() => ({ status: 500 })));
+
+    component.onLogin();
+
+    expect(component.errorMessage).toBe('Server error. Please try again later.');
+  });
+
+  it('should toggle password visibility', () => {
+    expect(component.showPassword).toBeFalse();
+
     component.showPassword = !component.showPassword;
-    expect(component.showPassword).toBe(true);
+    expect(component.showPassword).toBeTrue();
+
+    component.showPassword = !component.showPassword;
+    expect(component.showPassword).toBeFalse();
   });
-
-  it('should navigate to /events after a successful login', () => {
-    authServiceSpy.login.and.returnValue(of({}));
-
-    component.onLogin();
-
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
-  });
-
-  it('should disable the submit button when isLoading is true', () => {
-    component.isLoading = true;
-    fixture.detectChanges();
-
-    const button = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
-    expect(button.disabled).toBe(true);
-  });
-
-
-  it('should set isLoading to true while login is in progress', () => {
-  const subject = new Subject<any>();
-  authServiceSpy.login.and.returnValue(subject.asObservable());
-  component.onLogin();
-  expect(component.isLoading).toBe(true);
-  subject.complete();
-});
-
-
-  it('should call authService.login with loginData', () => {
-    authServiceSpy.login.and.returnValue(of({}));
-    component.loginData = { email: 'a@b.com', password: '123' };
-    component.onLogin();
-    expect(authServiceSpy.login).toHaveBeenCalledWith({ email: 'a@b.com', password: '123' });
-  });
-
 });

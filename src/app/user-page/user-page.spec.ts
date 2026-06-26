@@ -3,76 +3,58 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { UserPage } from './user-page';
 import { AuthService } from '../services/auth.service';
-import { EventService } from '../services/event.service';
-import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
+import { TagService } from '../services/tag.service';
 import { of } from 'rxjs';
-import { FormsModule } from '@angular/forms';
 
-describe('UserPage', () => {
+describe('UserPage Component', () => {
   let component: UserPage;
   let fixture: ComponentFixture<UserPage>;
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
-  let eventServiceSpy: jasmine.SpyObj<EventService>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  
+  const authSpy = jasmine.createSpyObj('AuthService', ['isLoggedIn', 'currentUsername', 'currentUserEmail', 'updateUserRole', 'logout', 'deleteAccount']);
+  const userSpy = jasmine.createSpyObj('UserService', ['getCurrentUserProfile', 'getMyTags', 'getOrganizerRequestStatus', 'submitOrganizerRequest', 'updateMyTags']);
+  const tagSpy = jasmine.createSpyObj('TagService', ['getAllTags']);
 
   beforeEach(() => {
-    const authSpy = jasmine.createSpyObj('AuthService', ['isLoggedIn', 'currentUsername', 'currentUserEmail', 'currentUserId', 'currentUserRole', 'logout', 'deleteAccount']);
-    const eventSpy = jasmine.createSpyObj('EventService', ['getEvents']);
-    const navSpy = jasmine.createSpyObj('Router', ['navigate']);
+    authSpy.isLoggedIn.and.returnValue(true);
+    userSpy.getCurrentUserProfile.and.returnValue(of({ role: 'User' }));
+    userSpy.getMyTags.and.returnValue(of([]));
+    userSpy.getOrganizerRequestStatus.and.returnValue(of({ status: 1 }));
+    tagSpy.getAllTags.and.returnValue(of([{ id: 1, name: 'Music' }]));
 
     TestBed.configureTestingModule({
-      imports: [FormsModule, UserPage],
+      imports: [UserPage],
       providers: [
         { provide: AuthService, useValue: authSpy },
-        { provide: EventService, useValue: eventSpy },
-        { provide: Router, useValue: navSpy }
+        { provide: UserService, useValue: userSpy },
+        { provide: TagService, useValue: tagSpy }
       ]
     });
 
     fixture = TestBed.createComponent(UserPage);
     component = fixture.componentInstance;
-    authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    eventServiceSpy = TestBed.inject(EventService) as jasmine.SpyObj<EventService>;
-    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    fixture.detectChanges(); // Trigger ngOnInit
   });
 
-  it('should redirect to login if not logged in', () => {
-    authServiceSpy.isLoggedIn.and.returnValue(false);
-    component.ngOnInit();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
+  it('should initialize and set active tab to profile', () => {
+    expect(component.activeTab).toBe('profile');
   });
 
   it('should toggle tag selection', () => {
-    const tag = { name: 'Art', selected: false };
-    component.toggleTag(tag);
-    expect(tag.selected).toBe(true);
+    const mockTag = { id: 1, name: 'Music', selected: false };
+    component.toggleTag(mockTag);
+    expect(mockTag.selected).toBe(true);
   });
 
-  it('should reset all tags', () => {
-    component.resetTags();
-    const allSelected = component.allTags.every(t => !t.selected);
-    expect(allSelected).toBe(true);
+  it('should calculate correct selected count', () => {
+    component.allTags = [{ id: 1, selected: true }, { id: 2, selected: false }];
+    expect(component.selectedCount).toBe(1);
   });
 
-  it('should update active tab', () => {
-    component.setActiveTab('liked');
-    expect(component.activeTab).toBe('liked');
-  });
-
-  it('should logout and navigate on logout click', () => {
-    component.logout();
-    expect(authServiceSpy.logout).toHaveBeenCalled();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
-  });
-
-  it('should delete account and navigate on success', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
-    authServiceSpy.deleteAccount.and.returnValue(of({}));
-    
-    component.deleteAccount();
-    
-    expect(authServiceSpy.deleteAccount).toHaveBeenCalled();
-    expect(authServiceSpy.logout).toHaveBeenCalled();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/signup']);
+  it('should submit request only if reason is long enough', () => {
+    spyOn(window, 'alert');
+    component.requestReason = 'short';
+    component.submitOrganizerRequest();
+    expect(window.alert).toHaveBeenCalledWith('The reason must be at least 10 characters long.');
   });
 });

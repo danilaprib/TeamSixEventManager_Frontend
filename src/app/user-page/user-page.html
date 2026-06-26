@@ -60,8 +60,11 @@
         <textarea
           class="form-control mb-2"
           [(ngModel)]="requestReason"
-          placeholder="Enter reason..."
+          placeholder="Enter reason (at least 10 characters)..."
+          minlength="10"
+          required
         ></textarea>
+        <small class="text-muted">Minimum 10 characters required.</small>
         <div class="d-flex gap-2">
           <button
             class="btn btn-success btn-sm flex-grow-1"

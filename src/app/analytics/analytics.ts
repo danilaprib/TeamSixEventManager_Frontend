@@ -62,21 +62,6 @@ export class Analytics implements OnInit {
         this.cdr.detectChanges();
       }
     });
-
-    // this.analyticsService.getAnalytics(this.id).subscribe({
-    //   next: (data) => {
-    //     this.analyticsData = data;
-    //     this.updateCharts(data);
-    //     this.isLoading = false;
-    //     this.cdr.detectChanges();
-    //   },
-    //   error: (err) => {
-    //     console.error('Analytics request failed:', err);
-    //     this.errorMessage = 'Failed to load analytics for this event.';
-    //     this.isLoading = false;
-    //     this.cdr.detectChanges();
-    //   }
-    // });
   }
 
 

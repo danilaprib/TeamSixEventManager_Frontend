@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, Router } from "@angular/router";
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
@@ -24,10 +24,8 @@ export class UserPage implements OnInit {
   public userService = inject(UserService);
   private eventService = inject(EventService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
-  // showCurrentPassword = false;
-  // showNewPassword = false;
-  // showConfirmPassword = false;
   activeTab: string = 'profile';
   likedEvents: any[] = [];
   likedEventsError = '';
@@ -56,13 +54,14 @@ export class UserPage implements OnInit {
       this.loadUserInterests();
     });
     this.loadLikedEvents();
+    this.cdr.detectChanges();
   }
 
   refreshUserData() {
-  this.userService.getCurrentUserProfile().subscribe((user: any) => {
-    this.authService.updateUserRole(user.role); 
-  });
-}
+    this.userService.getCurrentUserProfile().subscribe((user: any) => {
+      this.authService.updateUserRole(user.role);
+    });
+  }
 
   loadUserInterests() {
     this.userService.getMyTags().subscribe(savedTags => {
@@ -87,12 +86,27 @@ export class UserPage implements OnInit {
   }
 
   submitOrganizerRequest() {
-    if (!this.requestReason) return;
+    // if (!this.requestReason) return;
 
-    this.userService.submitOrganizerRequest(this.requestReason).subscribe(() => {
-      this.isRequesting = false;
-      this.requestStatus = 'Pending';
-      alert('Request submitted successfully!');
+    // this.userService.submitOrganizerRequest(this.requestReason).subscribe(() => {
+    //   this.isRequesting = false;
+    //   this.requestStatus = 'Pending';
+    //   alert('Request submitted successfully!');
+    // });
+
+    if (!this.requestReason || this.requestReason.trim().length < 10) {
+      alert('The reason must be at least 10 characters long.');
+      return;
+    }
+
+    this.userService.submitOrganizerRequest(this.requestReason).subscribe({
+      next: () => {
+        this.isRequesting = false;
+        this.requestStatus = 'Pending';
+        alert('Request submitted successfully!');
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error(err)
     });
   }
 

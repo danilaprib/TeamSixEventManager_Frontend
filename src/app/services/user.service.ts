@@ -8,14 +8,20 @@ export class UserService {
   private http = inject(HttpClient);
   private tagsUrl = 'https://teamsixeventmanager-backend-develop.onrender.com/api/users/me/tags';
   public authService = inject(AuthService);
+  
 
   getMyTags() { return this.http.get<any[]>(this.tagsUrl); }
 
   updateMyTags(tagIds: number[]) { return this.http.put(this.tagsUrl, tagIds); }
 
-  submitOrganizerRequest(reason: string) {
+  submitOrganizerRequest(reason: string): Observable<any> {
+
+    const payload = {
+      reason: reason
+    };
+
     return this.http.post('https://teamsixeventmanager-backend-develop.onrender.com/api/organizer-requests',
-      { reason }, this.authService.getAuthOptions());
+      payload, this.authService.getAuthOptions());
   }
 
   getOrganizerRequestStatus() {
@@ -23,8 +29,8 @@ export class UserService {
       this.authService.getAuthOptions());
   }
 
-getCurrentUserProfile() {
-  return this.http.get('https://teamsixeventmanager-backend-develop.onrender.com/api/users/me', 
-    this.authService.getAuthOptions());
-}
+  getCurrentUserProfile() {
+    return this.http.get('https://teamsixeventmanager-backend-develop.onrender.com/api/users/me',
+      this.authService.getAuthOptions());
+  }
 }
